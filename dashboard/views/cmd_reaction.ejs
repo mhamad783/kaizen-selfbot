@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Reaction - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        select.input-field {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .btn-add:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #333;
+        }
+
+        /* Trigger List Styles */
+        .trigger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a20;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 15px;
+        }
+
+        .trigger-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .trigger-name {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .trigger-sub {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .trigger-emojis {
+            color: #65d6ae;
+            font-family: 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+            word-break: break-all;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Server Preview */
+        .server-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #15151a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #147b61;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sp-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .sp-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sp-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .sp-sub {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Whitelist Items Mobile Fix */
+        .whitelist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a20;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .whitelist-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .whitelist-info {
+            flex-grow: 1;
+            min-width: 0;
+            margin-right: 5px;
+        }
+
+        .whitelist-name {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1rem;
+        }
+
+        .whitelist-sub {
+            font-size: 0.8rem;
+            color: #888;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        /* Toggle Switch */
+        /* FIX: Prevent switch overflow on small screens */
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .status-info {
+            flex: 1;
+            min-width: 0;
+            padding-right: 15px;
+        }
+
+        /* New container for text */
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #147b61;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .trigger-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .btn-delete {
+                width: auto;
+                margin: 0;
+                flex-shrink: 0;
+            }
+
+            .whitelist-item .btn-delete {
+                padding: 8px 12px;
+            }
+
+            .trigger-name,
+            .trigger-emojis {
+                word-break: break-all;
+            }
+
+            .main-container {
+                padding: 80px 15px 100px;
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>Auto Reaction</h1>
+            <p>Manage automatic reactions remotely.</p>
+        </div>
+
+        <!-- Global Toggle -->
+        <div class="section-card">
+            <div class="status-row">
+                <div class="status-info"> <!-- Wrapped in flex container -->
+                    <span style="font-size: 1.1rem; font-weight:600;">Global Enable</span>
+                    <p style="color: #888; font-size: 0.85rem; margin-top: 5px;">
+                        <span id="globalStatusText">ON: Reaction works everywhere.</span>
+                    </p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="globalToggle" onchange="updateConfig()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Whitelists -->
+        <div class="form-grid">
+            <div class="section-card">
+                <div class="section-title">Whitelisted Servers</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Enable even if Global is OFF.</p>
+
+                <input type="text" id="inputGuild" class="input-field" placeholder="Paste Server ID..."
+                    oninput="onWhitelistInput('guild')">
+                <div id="previewGuild" style="display:none;"></div>
+                <button id="btnAddGuild" class="btn-add" disabled onclick="confirmAdd('guild')">Add Server</button>
+
+                <div id="serverList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Whitelisted Channels</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Enable even if Global is OFF.</p>
+
+                <input type="text" id="inputChannel" class="input-field" placeholder="Paste Channel ID..."
+                    oninput="onWhitelistInput('channel')">
+                <div id="previewChannel" style="display:none;"></div>
+                <button id="btnAddChannel" class="btn-add" disabled onclick="confirmAdd('channel')">Add Channel</button>
+
+                <div id="channelList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- Add New Trigger -->
+        <div class="section-card">
+            <div class="section-title">Add New Trigger</div>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label">Type</label>
+                    <select id="newType" class="input-field">
+                        <option value="text">Text / Keyword</option>
+                        <option value="user">User ID</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Trigger</label>
+                    <input type="text" id="newTrigger" class="input-field" placeholder="Keyword or User ID...">
+                </div>
+                <div class="input-group full-width">
+                    <label class="input-label">Emojis</label>
+                    <input type="text" id="newEmojis" class="input-field" placeholder="e.g. 🔥 💯 <a:dance:123456>">
+                </div>
+            </div>
+            <button class="btn-add" onclick="addTrigger()">Add Trigger</button>
+        </div>
+
+        <!-- Trigger Lists -->
+        <div class="form-grid">
+            <div class="section-card">
+                <div class="section-title">Text Triggers</div>
+                <div id="textList">
+                    <div class="no-items">Loading...</div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">User Triggers</div>
+                <div id="userList">
+                    <div class="no-items">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let currentData = {};
+            let debounceTimer;
+
+            async function loadData() {
+                try {
+                    const res = await fetch('/api/reaction');
+                    currentData = await res.json();
+                    render();
+                } catch (e) { console.error(e); }
+            }
+
+            function render() {
+                // Global
+                const globalOn = currentData.global;
+                document.getElementById('globalToggle').checked = globalOn;
+                document.getElementById('globalStatusText').innerText = globalOn ?
+                    "ON: Reactions active everywhere." :
+                    "OFF: Reactions active ONLY in Whitelisted Servers/Channels.";
+
+                // Text List
+                const textList = document.getElementById('textList');
+                textList.innerHTML = '';
+                const texts = Object.entries(currentData.textTriggers || {});
+                if (texts.length === 0) textList.innerHTML = '<div class="no-items">No text triggers set.</div>';
+                else {
+                    texts.forEach(([trigger, emojis]) => {
+                        textList.innerHTML += `
+                    <div class="trigger-item">
+                        <div class="trigger-info">
+                            <div class="trigger-name">"${trigger}"</div>
+                            <div class="trigger-emojis">${emojis.join(' ')}</div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteTrigger('text', '${trigger}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                    });
+                }
+
+                // User List
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                const users = Object.entries(currentData.userTriggers || {});
+                if (users.length === 0) userList.innerHTML = '<div class="no-items">No user triggers set.</div>';
+                else {
+                    users.forEach(([userId, emojis]) => {
+                        userList.innerHTML += `
+                    <div class="trigger-item">
+                        <div class="trigger-info">
+                            <div class="trigger-name">User: ${userId}</div>
+                            <div class="trigger-emojis">${emojis.join(' ')}</div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteTrigger('user', '${userId}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                    });
+                }
+
+                // Render SERVER Whitelist (using enriched data)
+                const sList = document.getElementById('serverList');
+                sList.innerHTML = '';
+                const servers = currentData.enrichedServers || [];
+                if (servers.length === 0) sList.innerHTML = '<div class="no-items">No whitelisted servers.</div>';
+                else {
+                    servers.forEach(s => {
+                        sList.innerHTML += `
+                    <div class="whitelist-item">
+                        <img src="${s.icon}" class="whitelist-icon">
+                        <div class="whitelist-info">
+                            <div class="whitelist-name">${s.name}</div>
+                            <div class="whitelist-sub">ID: ${s.id}</div>
+                        </div>
+                        <button class="btn-delete" style="padding:5px 10px;" onclick="removeWhitelist('guild', '${s.id}')"><i class="fas fa-times"></i></button>
+                    </div>`;
+                    });
+                }
+
+                // Render CHANNEL Whitelist (using enriched data)
+                const cList = document.getElementById('channelList');
+                cList.innerHTML = '';
+                const channels = currentData.enrichedChannels || [];
+                if (channels.length === 0) cList.innerHTML = '<div class="no-items">No whitelisted channels.</div>';
+                else {
+                    channels.forEach(c => {
+                        cList.innerHTML += `
+                    <div class="whitelist-item">
+                        <img src="${c.guildIcon}" class="whitelist-icon">
+                        <div class="whitelist-info">
+                            <div class="whitelist-name">#${c.name}</div>
+                            <div class="whitelist-sub">in ${c.guildName}</div>
+                        </div>
+                        <button class="btn-delete" style="padding:5px 10px;" onclick="removeWhitelist('channel', '${c.id}')"><i class="fas fa-times"></i></button>
+                    </div>`;
+                    });
+                }
+            }
+
+            function onWhitelistInput(type) {
+                clearTimeout(debounceTimer);
+                const inputId = type === 'guild' ? 'inputGuild' : 'inputChannel';
+                const previewId = type === 'guild' ? 'previewGuild' : 'previewChannel';
+                const btnId = type === 'guild' ? 'btnAddGuild' : 'btnAddChannel';
+                const id = document.getElementById(inputId).value.trim();
+                const previewEl = document.getElementById(previewId);
+                const btnEl = document.getElementById(btnId);
+
+                if (id.length < 17) {
+                    previewEl.style.display = 'none';
+                    btnEl.disabled = true;
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    previewEl.style.display = 'block';
+                    previewEl.className = 'server-preview';
+                    previewEl.innerHTML = '<div style="color:#999;">Verifying...</div>';
+
+                    try {
+                        const res = await fetch(`/api/validate/${type}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+
+                        if (res.ok) {
+                            const info = await res.json();
+                            let iconUrl = info.icon || 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                            if (type === 'channel') {
+                                iconUrl = info.guildIcon || 'https://cdn.discordapp.com/embed/avatars/0.png';
+                            }
+
+                            let subInfo = type === 'guild' ? 'Server Found' : `In server: ${info.guildName}`;
+
+                            previewEl.innerHTML = `
+                        <img src="${iconUrl}" class="sp-icon">
+                        <div class="sp-info">
+                            <div class="sp-name">${info.name}</div>
+                            <div class="sp-sub">${subInfo}</div>
+                        </div>
+                    `;
+                            btnEl.disabled = false;
+                        } else {
+                            previewEl.innerHTML = '<div style="color:#ff5555;">Invalid ID or Bot not in server.</div>';
+                            btnEl.disabled = true;
+                        }
+                    } catch (e) {
+                        previewEl.innerHTML = '<div style="color:#ff5555;">Error checking ID.</div>';
+                        btnEl.disabled = true;
+                    }
+                }, 800);
+            }
+
+            async function confirmAdd(type) {
+                const inputId = type === 'guild' ? 'inputGuild' : 'inputChannel';
+                const id = document.getElementById(inputId).value.trim();
+                if (!id) return;
+
+                if (type === 'guild') {
+                    if (!currentData.enabledServers) currentData.enabledServers = [];
+                    if (!currentData.enabledServers.includes(id)) currentData.enabledServers.push(id);
+                } else {
+                    if (!currentData.enabledChannels) currentData.enabledChannels = [];
+                    if (!currentData.enabledChannels.includes(id)) currentData.enabledChannels.push(id);
+                }
+                await saveData();
+                await loadData();
+
+                document.getElementById(inputId).value = '';
+                document.getElementById(type === 'guild' ? 'previewGuild' : 'previewChannel').style.display = 'none';
+                document.getElementById(type === 'guild' ? 'btnAddGuild' : 'btnAddChannel').disabled = true;
+            }
+
+            async function removeWhitelist(type, id) {
+                if (!confirm('Remove this whitelist entry?')) return;
+                if (type === 'guild') {
+                    currentData.enabledServers = currentData.enabledServers.filter(x => x !== id);
+                } else {
+                    currentData.enabledChannels = currentData.enabledChannels.filter(x => x !== id);
+                }
+                await saveData();
+                await loadData();
+            }
+
+            async function updateConfig() {
+                currentData.global = document.getElementById('globalToggle').checked;
+                await saveData();
+                render();
+            }
+
+            async function addTrigger() {
+                const type = document.getElementById('newType').value;
+                const trigger = document.getElementById('newTrigger').value.trim();
+                const emojiStr = document.getElementById('newEmojis').value.trim();
+
+                if (!trigger || !emojiStr) return alert('Please fill in all fields');
+                const emojis = emojiStr.split(/\s+/).filter(e => e);
+
+                if (type === 'text') {
+                    if (!currentData.textTriggers) currentData.textTriggers = {};
+                    currentData.textTriggers[trigger] = emojis;
+                } else {
+                    if (!currentData.userTriggers) currentData.userTriggers = {};
+                    currentData.userTriggers[trigger] = emojis;
+                }
+
+                await saveData();
+                document.getElementById('newTrigger').value = '';
+                document.getElementById('newEmojis').value = '';
+                render();
+            }
+
+            async function deleteTrigger(type, trigger) {
+                if (!confirm('Delete this trigger?')) return;
+                if (type === 'text') delete currentData.textTriggers[trigger];
+                else delete currentData.userTriggers[trigger];
+                await saveData();
+                render();
+            }
+
+            async function saveData() {
+                try {
+                    const payload = {
+                        global: currentData.global,
+                        enabledServers: currentData.enabledServers,
+                        enabledChannels: currentData.enabledChannels,
+                        textTriggers: currentData.textTriggers,
+                        userTriggers: currentData.userTriggers
+                    };
+                    await fetch('/api/reaction', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (e) { console.error('Error saving:', e); }
+            }
+
+            window.onload = loadData;
+        </script>
+</body>
+
+</html>

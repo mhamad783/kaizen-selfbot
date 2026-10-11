@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#091310">
+    <title>Kaizen+ Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="/favicon.ico">
+</head>
+<body class="dashboard-home <%= user ? 'is-connected' : 'needs-token' %>">
+    <main class="home-shell">
+        <header class="home-topbar">
+            <a class="home-brand" href="/" aria-label="Kaizen+ dashboard home">
+                <span class="home-brand-mark">K</span>
+                <span>Kaizen<span class="brand-accent">+</span></span>
+            </a>
+            <div class="topbar-status">
+                <span class="live-dot"></span>
+                <span>Local session</span>
+            </div>
+        </header>
+
+        <section class="home-heading">
+            <div>
+                <p class="home-eyebrow">Control center</p>
+                <h1><%= user ? 'Your account, at a glance.' : 'Your dashboard is ready.' %></h1>
+                <p class="home-subtitle"><%= user ? 'Presence, account health, and status controls in one place.' : 'Connect your account to unlock your features.' %></p>
+            </div>
+            <a class="home-settings-link" href="/settings"><i class="fas fa-sliders-h" aria-hidden="true"></i> Settings</a>
+        </section>
+
+        <% if (user) { %>
+        <div class="home-grid">
+            <section class="home-card account-card">
+                <div class="card-heading">
+                    <div>
+                        <p class="home-eyebrow">Connected account</p>
+                        <h2>Account overview</h2>
+                    </div>
+                    <span class="connection-pill"><span class="live-dot"></span> Connected</span>
+                </div>
+
+                <div class="account-identity">
+                    <img class="home-avatar" src="<%= user.displayAvatarURL({ format: 'png', dynamic: true, size: 256 }) %>" alt="<%= user.username %>'s avatar">
+                    <div class="identity-copy">
+                        <h3><%= user.username %></h3>
+                        <p><%= user.tag %></p>
+                    </div>
+                </div>
+
+                <div class="account-stats">
+                    <div class="account-stat">
+                        <span class="stat-label">Current status</span>
+                        <span class="stat-value status-value status-<%= status === 'invisible' ? 'offline' : status %>"><span class="status-dot"></span><%= status === 'dnd' ? 'Do not disturb' : status.charAt(0).toUpperCase() + status.slice(1) %></span>
+                    </div>
+                    <div class="account-stat">
+                        <span class="stat-label">Session uptime</span>
+                        <span class="stat-value uptime-badge">00d 00h 00m 00s</span>
+                    </div>
+                </div>
+
+                <% if (typeof clients !== 'undefined' && clients.length > 1) { %>
+                    <div class="account-switcher">
+                        <label class="home-label" for="accountSelect">Switch account</label>
+                        <select id="accountSelect" class="home-select">
+                            <% clients.forEach(function(account) { %>
+                                <option value="<%= account.tokenKey %>" <%= account.tokenKey === activeClientKey ? 'selected' : '' %>>
+                                    <%= account.user ? account.user.tag : account.userLabel %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                <% } %>
+            </section>
+
+            <section class="home-card status-card">
+                <div class="card-heading">
+                    <div>
+                        <p class="home-eyebrow">Presence settings</p>
+                        <h2>Shape your status</h2>
+                    </div>
+                    <span class="card-icon"><i class="fas fa-sparkles" aria-hidden="true"></i></span>
+                </div>
+
+                <form id="statusForm" action="/update-status" method="POST" class="home-status-form">
+                    <fieldset class="status-fieldset">
+                        <legend class="home-label">Status mode</legend>
+                        <div class="home-status-options">
+                            <% [
+                                { value: 'online', label: 'Online', tone: 'online' },
+                                { value: 'idle', label: 'Idle', tone: 'idle' },
+                                { value: 'dnd', label: 'Do not disturb', tone: 'dnd' },
+                                { value: 'invisible', label: 'Invisible', tone: 'offline' }
+                            ].forEach(function(option) { %>
+                                <label class="home-status-option">
+                                    <input type="radio" name="status" value="<%= option.value %>" <%= status === option.value ? 'checked' : '' %>>
+                                    <span class="home-status-choice <%= option.tone %>"><span class="status-dot"></span><%= option.label %></span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </fieldset>
+
+                    <div class="home-form-field">
+                        <label class="home-label" for="customStatus">Custom message</label>
+                        <input id="customStatus" type="text" name="custom_status" class="home-input" maxlength="128" placeholder="What are you up to?" value="<%= currentActivity %>">
+                    </div>
+
+                    <div class="home-form-field">
+                        <label class="home-label" for="statusEmoji">Emoji <span class="label-note">optional</span></label>
+                        <input id="statusEmoji" type="text" name="emoji" class="home-input" placeholder="Add an emoji or custom emoji ID" value="<%= currentEmoji %>">
+                    </div>
+
+                    <div class="home-form-actions">
+                        <p id="statusFeedback" class="status-feedback" role="status" aria-live="polite"></p>
+                        <button type="submit" id="updateStatusBtn" class="home-save-button">Save status <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    </div>
+                </form>
+            </section>
+        </div>
+        <% } else { %>
+        <section class="home-card features-waiting">
+            <div class="card-heading">
+                <div>
+                    <p class="home-eyebrow">Feature workspace</p>
+                    <h2>Everything in one dashboard</h2>
+                </div>
+                <span class="card-icon"><i class="fas fa-layer-group" aria-hidden="true"></i></span>
+            </div>
+            <div class="feature-preview-grid">
+                <div class="feature-preview"><i class="fas fa-sliders-h" aria-hidden="true"></i><span>Presence</span></div>
+                <div class="feature-preview"><i class="fas fa-moon" aria-hidden="true"></i><span>AFK</span></div>
+                <div class="feature-preview"><i class="fas fa-bolt" aria-hidden="true"></i><span>Commands</span></div>
+                <div class="feature-preview"><i class="fas fa-comments" aria-hidden="true"></i><span>AI chat</span></div>
+                <div class="feature-preview"><i class="fas fa-music" aria-hidden="true"></i><span>Music</span></div>
+            </div>
+            <p class="features-note">Enter your token in the small sign-in window to open these features.</p>
+        </section>
+        <% } %>
+
+        <footer class="home-footer">
+            <span>Kaizen+ <span class="footer-separator">/</span> Account dashboard</span>
+            <span>Tokens are requested again after each server restart.</span>
+        </footer>
+    </main>
+
+    <% if (!user) { %>
+    <div class="token-modal-backdrop">
+        <section class="token-modal" role="dialog" aria-modal="true" aria-labelledby="tokenModalTitle">
+            <div class="token-modal-icon"><i class="fas fa-key" aria-hidden="true"></i></div>
+            <p class="home-eyebrow">Local sign-in</p>
+            <h2 id="tokenModalTitle">Connect your account</h2>
+            <p class="token-modal-copy">Enter your Discord token to continue to the dashboard. It stays in memory and is cleared when the server stops.</p>
+            <form id="tokenForm" class="token-form">
+                <label class="home-label" for="tokenInput">Discord token</label>
+                <textarea id="tokenInput" class="home-input token-input" name="tokens" rows="2" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your token"></textarea>
+                <p id="tokenFeedback" class="token-feedback" role="status" aria-live="polite"></p>
+                <button type="submit" id="connectBtn" class="home-save-button token-submit">Connect to dashboard <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            </form>
+            <p class="token-security-note"><i class="fas fa-lock" aria-hidden="true"></i> Local-only session · No token is saved</p>
+        </section>
+    </div>
+    <% } %>
+
+    <%- include('partials/super_button') %>
+    <script>
+        let uptimeSeconds = <%= uptimeSeconds %>;
+        const uptimeElement = document.querySelector('.uptime-badge');
+        const statusForm = document.getElementById('statusForm');
+        const statusFeedback = document.getElementById('statusFeedback');
+        const statusButton = document.getElementById('updateStatusBtn');
+
+        function formatUptime(totalSeconds) {
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return [days, hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
+        }
+
+        function updateUptime() {
+            if (uptimeElement) uptimeElement.textContent = formatUptime(uptimeSeconds++);
+        }
+
+        if (uptimeElement) {
+            updateUptime();
+            setInterval(updateUptime, 1000);
+        }
+
+        const accountSelect = document.getElementById('accountSelect');
+        if (accountSelect) {
+            accountSelect.addEventListener('change', async () => {
+                try {
+                    const response = await fetch('/api/switch_client', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: accountSelect.value })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error('Could not switch accounts.');
+                    window.location.reload();
+                } catch (error) {
+                    statusFeedback.textContent = error.message;
+                    statusFeedback.classList.add('error');
+                }
+            });
+        }
+
+        if (statusForm) {
+            statusForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                statusButton.disabled = true;
+                statusFeedback.textContent = 'Saving your status…';
+                statusFeedback.classList.remove('error');
+
+                try {
+                    const response = await fetch('/update-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(new FormData(statusForm).entries()))
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error(result.message || 'Could not save your status.');
+                    statusFeedback.textContent = 'Status saved successfully.';
+                } catch (error) {
+                    statusFeedback.textContent = error.message;
+                    statusFeedback.classList.add('error');
+                } finally {
+                    statusButton.disabled = false;
+                }
+            });
+        }
+
+        const tokenForm = document.getElementById('tokenForm');
+        if (tokenForm) {
+            const tokenInput = document.getElementById('tokenInput');
+            const tokenFeedback = document.getElementById('tokenFeedback');
+            const connectButton = document.getElementById('connectBtn');
+            let waitingForConnection = false;
+
+            tokenForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                connectButton.disabled = true;
+                connectButton.innerHTML = 'Connecting…';
+                tokenFeedback.textContent = 'Connecting your account…';
+                tokenFeedback.classList.remove('error');
+
+                try {
+                    const response = await fetch('/api/connect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tokens: tokenInput.value })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error(result.message || 'Could not connect this account.');
+                    tokenInput.value = '';
+                    waitingForConnection = true;
+                } catch (error) {
+                    tokenFeedback.textContent = error.message;
+                    tokenFeedback.classList.add('error');
+                    connectButton.disabled = false;
+                    connectButton.innerHTML = 'Connect to dashboard <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+                }
+            });
+
+            async function checkConnection() {
+                if (!waitingForConnection) return;
+                try {
+                    const response = await fetch('/api/status');
+                    if (!response.ok) throw new Error('Unable to check the connection.');
+                    const state = await response.json();
+                    if (state.total > 0 && state.ready === state.total) {
+                        window.location.reload();
+                    } else if (state.phase === 'error' || state.accounts.some((account) => account.status === 'error')) {
+                        waitingForConnection = false;
+                        tokenFeedback.textContent = state.message || 'Connection failed. Check the token and try again.';
+                        tokenFeedback.classList.add('error');
+                        connectButton.disabled = false;
+                        connectButton.innerHTML = 'Try again <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+                    }
+                } catch (error) {
+                    waitingForConnection = false;
+                    tokenFeedback.textContent = error.message;
+                    tokenFeedback.classList.add('error');
+                    connectButton.disabled = false;
+                    connectButton.innerHTML = 'Try again <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+                }
+            }
+
+            setInterval(checkConnection, 1200);
+            tokenInput.focus();
+        }
+    </script>
+</body>
+</html>

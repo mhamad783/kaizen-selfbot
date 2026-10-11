@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror System - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .btn-add:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #333;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .channel-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #15151a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #147b61;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cp-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .cp-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cp-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .cp-sub {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .whitelist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #1a1a20;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .tag-webhook {
+            background: rgba(20, 123, 97, 0.2);
+            color: #65d6ae;
+            border: 1px solid rgba(20, 123, 97, 0.3);
+        }
+
+        .tag-normal {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-btn {
+                top: 20px;
+                left: 20px;
+            }
+
+            .main-container {
+                padding-top: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>Mirror System</h1>
+            <p>Duplicate messages between channels instantly.</p>
+        </div>
+
+        <!-- Configuration -->
+        <div class="section-card">
+            <div class="section-title">New Mirror</div>
+
+            <div class="input-group">
+                <label class="input-label">Mirror Mode</label>
+                <select id="mode" class="input-field" onchange="onModeChange()">
+                    <option value="normal">Normal Mode (Copy Content Only)</option>
+                    <option value="webhook">Clone Mode (Webhook - Identity Clone)</option>
+                </select>
+                <p id="modeDesc" style="color: #666; font-size: 0.85rem; margin-top: 5px;">
+                    Normal: Reposts messages as your account (SelfBot).<br>
+                    Clone: Creates a Webhook to mimic the original sender (Name/Avatar). <strong>Requires 'Manage
+                        Webhooks' permission in Target.</strong>
+                </p>
+            </div>
+
+            <div class="form-grid">
+                <!-- Source -->
+                <div>
+                    <label class="input-label">Source Channel ID</label>
+                    <input type="text" id="sourceId" class="input-field" placeholder="Channel to copy FROM..."
+                        oninput="validateChannel('source')">
+                    <div id="previewSource" style="display:none;"></div>
+                </div>
+
+                <!-- Target -->
+                <div>
+                    <label class="input-label">Target Channel ID</label>
+                    <input type="text" id="targetId" class="input-field" placeholder="Channel to copy TO..."
+                        oninput="validateChannel('target')">
+                    <div id="previewTarget" style="display:none;"></div>
+                </div>
+            </div>
+
+            <button id="btnAdd" class="btn-add" disabled onclick="addMirror()">Start Mirroring</button>
+        </div>
+
+        <!-- Active Mirrors -->
+        <div class="section-card">
+            <div class="section-title">Active Mirrors</div>
+            <div id="mirrorList">
+                <div style="text-align:center; color:#666;">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let validSource = false;
+            let validTarget = false;
+            let debounceTimer;
+
+            function onModeChange() {
+                // Re-validate target if ID exists, because permission requirements changed
+                const tid = document.getElementById('targetId').value.trim();
+                if (tid) validateChannel('target');
+            }
+
+            function validateChannel(type) {
+                clearTimeout(debounceTimer);
+                const id = document.getElementById(type + 'Id').value.trim();
+                const preview = document.getElementById('preview' + (type === 'source' ? 'Source' : 'Target'));
+                const checkWebhook = type === 'target' && document.getElementById('mode').value === 'webhook';
+
+                if (type === 'source') validSource = false; else validTarget = false;
+                checkBtn();
+
+                if (id.length < 17) {
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    preview.style.display = 'block';
+                    preview.innerHTML = '<div style="color:#999;">Verifying...</div>';
+
+                    try {
+                        const res = await fetch('/api/validate/mirror-channel', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id, checkWebhook, type })
+                        });
+
+                        if (res.ok) {
+                            const info = await res.json();
+                            preview.innerHTML = `
+                        <div class="channel-preview">
+                            <img src="${info.icon || 'https://cdn.discordapp.com/embed/avatars/0.png'}" class="cp-icon">
+                            <div class="cp-info">
+                                <div class="cp-name">#${info.name}</div>
+                                <div class="cp-sub">${info.guildName}</div>
+                            </div>
+                        </div>
+                    `;
+                            if (type === 'source') validSource = true; else validTarget = true;
+                        } else {
+                            const err = await res.json();
+                            preview.innerHTML = `<div style="color:#e74c3c; padding:10px;">Error: ${err.error}</div>`;
+                        }
+                    } catch (e) {
+                        preview.innerHTML = `<div style="color:#e74c3c; padding:10px;">Validation Failed</div>`;
+                    }
+                    checkBtn();
+                }, 600);
+            }
+
+            function checkBtn() {
+                document.getElementById('btnAdd').disabled = !(validSource && validTarget);
+            }
+
+            async function addMirror() {
+                const sourceId = document.getElementById('sourceId').value.trim();
+                const targetId = document.getElementById('targetId').value.trim();
+                const mode = document.getElementById('mode').value;
+                const btn = document.getElementById('btnAdd');
+
+                btn.disabled = true;
+                btn.innerText = "Starting...";
+
+                try {
+                    const res = await fetch('/api/mirror', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sourceId, targetId, mode })
+                    });
+
+                    if (res.ok) {
+                        // Reset UI
+                        document.getElementById('sourceId').value = '';
+                        document.getElementById('targetId').value = '';
+                        document.getElementById('previewSource').style.display = 'none';
+                        document.getElementById('previewTarget').style.display = 'none';
+                        validSource = false; validTarget = false;
+
+                        loadMirrors();
+                    } else {
+                        const err = await res.json();
+                        alert("Error: " + err.error);
+                    }
+                } catch (e) { alert("Failed to start mirror."); }
+
+                btn.innerText = "Start Mirroring";
+                checkBtn(); // Recalculate disable state
+            }
+
+            async function stopMirror(sourceId) {
+                if (!confirm('Stop this mirror?')) return;
+                try {
+                    await fetch('/api/mirror', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sourceId })
+                    });
+                    loadMirrors();
+                } catch (e) { console.error(e); }
+            }
+
+            async function loadMirrors() {
+                const listEl = document.getElementById('mirrorList');
+                try {
+                    const res = await fetch('/api/mirror');
+                    const mirrors = await res.json();
+
+                    if (mirrors.length === 0) {
+                        listEl.innerHTML = '<div style="text-align:center; color:#666; font-style:italic;">No active mirrors.</div>';
+                        return;
+                    }
+
+                    listEl.innerHTML = '';
+                    mirrors.forEach(m => {
+                        listEl.innerHTML += `
+                    <div class="whitelist-item">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; margin-bottom:5px;">
+                                <span class="tag tag-${m.mode}">${m.mode === 'webhook' ? 'Clone' : 'Normal'}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+                                <img src="${m.sourceIcon}" style="width:20px; height:20px; border-radius:50%;">
+                                <span>${m.sourceName}</span>
+                                <i class="fas fa-arrow-right" style="color:#666; font-size:0.8rem;"></i>
+                                <img src="${m.targetIcon}" style="width:20px; height:20px; border-radius:50%;">
+                                <span>${m.targetName}</span>
+                            </div>
+                        </div>
+                        <button class="btn-delete" onclick="stopMirror('${m.sourceId}')">Stop</button>
+                    </div>
+                `;
+                    });
+
+                } catch (e) {
+                    listEl.innerHTML = '<div style="color:#e74c3c;">Failed to load mirrors.</div>';
+                }
+            }
+
+            window.onload = loadMirrors;
+        </script>
+</body>
+
+</html>

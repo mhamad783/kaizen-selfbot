@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Discord - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dc-bg: #090b10;
+            --dc-rail: rgba(9, 10, 14, 0.95);
+            --dc-sidebar: rgba(14, 17, 22, 0.96);
+            --dc-panel: rgba(17, 21, 28, 0.9);
+            --dc-main: rgba(10, 12, 18, 0.82);
+            --dc-input: rgba(255,255,255,0.04);
+            --dc-text: #edf3ff;
+            --dc-muted: #9aa5b6;
+            --dc-accent: #5865f2;
+            --dc-accent-strong: #4a54d4;
+            --dc-line: rgba(255,255,255,0.08);
+            --dc-success: #3ba55d;
+            --dc-danger: #ed4245;
+            --dc-shadow: 0 30px 70px rgba(0,0,0,0.46);
+            --dc-radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            width: 100vw;
+            height: 100dvh;
+            max-width: 100vw;
+            max-height: 100dvh;
+            background: var(--dc-bg);
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Outfit', system-ui, sans-serif;
+            color: var(--dc-text);
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 90, 120, 0.12), transparent 26%),
+                radial-gradient(circle at 80% 25%, rgba(118, 92, 255, 0.18), transparent 30%),
+                linear-gradient(180deg, #07090d 0%, #090d13 100%);
+            display: block;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        button, input { font: inherit; }
+
+        .dc-app {
+            position: relative;
+            display: flex;
+            width: 100vw;
+            height: 100dvh;
+            min-height: 100dvh;
+            max-width: 100vw;
+            max-height: 100dvh;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .dc-app::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(5,6,8,0.8) 0%, rgba(5,6,8,0.12) 15%, rgba(5,6,8,0.18) 100%),
+                repeating-linear-gradient(135deg, transparent 0 32px, rgba(255,255,255,0.012) 33px 34px);
+            pointer-events: none;
+        }
+
+        .rail, .sidebar, .main {
+            position: relative;
+            z-index: 1;
+        }
+
+        .rail {
+            width: 78px;
+            background: rgba(10, 11, 15, 0.92);
+            border-right: 1px solid var(--dc-line);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 0 14px;
+            overflow-y: auto;
+            backdrop-filter: blur(18px);
+        }
+
+        .rail-btn {
+            width: 46px;
+            height: 46px;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            color: var(--dc-text);
+            font-size: 1.04rem;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-radius 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .rail-btn:hover, .rail-btn.active {
+            transform: translateY(-1px);
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--dc-accent), var(--dc-accent-strong));
+            box-shadow: 0 10px 24px rgba(88, 101, 242, 0.42);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .rail-btn.guild {
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            overflow: hidden;
+        }
+
+        .rail-btn.guild img {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            object-fit: cover;
+            display: block;
+        }
+
+        #guildRail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .rail-sep {
+            width: 36px;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            margin: 2px 0;
+        }
+
+        .sidebar {
+            width: 260px;
+            min-height: 0;
+            overflow: hidden;
+            background: rgba(14, 17, 22, 0.9);
+            border-right: 1px solid var(--dc-line);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(16px);
+        }
+
+        .sidebar-head {
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--dc-line);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .sidebar-list {
+            padding: 10px 8px 18px;
+            overflow-y: auto;
+            min-height: 0;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+        }
+
+        .sec-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--dc-muted);
+            padding: 12px 12px 8px;
+            font-weight: 700;
+        }
+
+        .sidebar-empty {
+            padding: 18px 14px;
+            color: var(--dc-muted);
+            font-size: 0.84rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--dc-muted);
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+            margin: 2px 0;
+        }
+
+        .row:hover {
+            background: rgba(255,255,255,0.04);
+            color: var(--dc-text);
+        }
+
+        .row.active {
+            background: linear-gradient(90deg, rgba(88,101,242,0.2), rgba(255,255,255,0.04));
+            color: var(--dc-text);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .row.locked .name { color: #c6bfab; }
+        .row .private-lock { color: #e0c77a; font-size: 0.76rem; flex-shrink: 0; }
+
+        .channel-icon {
+            width: 16px;
+            text-align: center;
+            opacity: 0.9;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
+            font-size: 0.72rem;
+            font-weight: 700;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .online-dot {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--dc-success);
+            border: 2px solid var(--dc-sidebar);
+        }
+
+        .online-dot.offline {
+            background: var(--dc-danger);
+        }
+
+        .row .name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(12, 16, 22, 0.96), rgba(8, 10, 16, 0.94));
+            backdrop-filter: blur(18px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 38%, rgba(236, 71, 111, 0.18), transparent 18%),
+                radial-gradient(circle at 72% 38%, rgba(136, 80, 245, 0.12), transparent 22%);
+            pointer-events: none;
+        }
+
+        .topbar {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 18px 0 14px;
+            border-bottom: 1px solid var(--dc-line);
+            background: rgba(18, 22, 29, 0.5);
+            position: relative;
+            overflow: visible;
+            z-index: 1;
+        }
+
+        .title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .title-wrap i {
+            color: var(--dc-muted);
+            font-size: 0.86rem;
+        }
+
+        .title {
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: rgba(255,255,255,0.92);
+        }
+
+        .account-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            color: var(--dc-muted);
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .account-chip img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .account-chip span {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--dc-muted);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.06);
+            color: var(--dc-text);
+        }
+
+        .icon-btn.active {
+            background: rgba(255,255,255,0.08);
+            color: var(--dc-text);
+        }
+
+        .menu-btn-wrap {
+            position: relative;
+            z-index: 30;
+        }
+
+        .call-banner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: rgba(59, 165, 93, 0.14);
+            border-bottom: 1px solid rgba(59, 165, 93, 0.3);
+            color: #bce9c6;
+            font-weight: 600;
+        }
+
+        .call-banner.show {
+            display: flex;
+        }
+
+        .messages {
+            position: relative;
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 18px 8px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12));
+        }
+
+        .empty-state {
+            height: 100%;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: rgba(255,255,255,0.72);
+            gap: 10px;
+            padding: 24px;
+        }
+
+        .empty-state i {
+            font-size: 2.4rem;
+            opacity: 0.8;
+            width: 78px;
+            height: 78px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.72);
+        }
+
+        .empty-state.error { color: #f2a6a6; }
+        .empty-state strong { color: var(--dc-text); font-size: 1rem; }
+
+        .message-row {
+            display: flex;
+            gap: 14px;
+            padding: 8px 10px;
+            border-radius: 14px;
+            transition: background 0.15s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .message-row:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .message-row.deleted {
+            background: rgba(240, 80, 80, 0.05);
+            border-left-color: rgba(255, 110, 110, 0.9);
+        }
+
+        .message-row.deleted .message-content {
+            color: rgba(255, 160, 160, 0.9);
+            opacity: 0.9;
+        }
+
+        .deleted-banner {
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(255, 95, 95, 0.12);
+            border: 1px solid rgba(255, 110, 110, 0.3);
+            color: #ff9b9b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .message-body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .message-author {
+            font-weight: 700;
+        }
+
+        .message-time {
+            font-size: 0.72rem;
+            color: var(--dc-muted);
+        }
+
+        .message-content {
+            color: var(--dc-text);
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .composer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 100%;
+            padding: 12px 18px 16px;
+            border-top: 1px solid var(--dc-line);
+            background: rgba(12, 14, 21, 0.78);
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        .discord-page.no-selection .topbar {
+            display: none;
+        }
+
+        .window-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.72);
+            font-size: 1rem;
+            display: none;
+            cursor: pointer;
+            z-index: 3;
+            line-height: 1;
+        }
+
+        .discord-page.no-selection .window-close {
+            display: grid;
+            place-items: center;
+        }
+
+        .discord-page.no-selection .messages {
+            background: rgba(8, 10, 15, 0.32);
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .discord-page.no-selection .composer {
+            background: rgba(10, 11, 16, 0.82);
+            border-top: 1px solid rgba(255,255,255,0.04);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .discord-page.no-selection .composer .icon-btn,
+        .discord-page.no-selection .composer .send-btn,
+        .discord-page.no-selection .composer-status {
+            display: none;
+        }
+
+        .discord-page.no-selection .composer-box {
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.04);
+            min-height: 42px;
+        }
+
+        .discord-page.no-selection .composer-box input {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.9rem;
+        }
+
+        .composer-box {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 0 14px;
+            min-height: 48px;
+            min-width: 0;
+            width: auto;
+            max-width: 100%;
+        }
+
+        .composer-box input {
+            flex: 1 1 auto;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--dc-text);
+            font-size: 0.98rem;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .composer-box input::placeholder { color: var(--dc-muted); }
+
+        .send-btn {
+            border: none;
+            background: linear-gradient(135deg, var(--dc-accent), var(--dc-accent-strong));
+            color: white;
+            border-radius: 12px;
+            min-width: 54px;
+            height: 40px;
+            padding: 0 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(88, 101, 242, 0.28);
+            transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+        .send-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+        .plugin-panel {
+            position: absolute;
+            top: 56px;
+            right: 10px;
+            width: 300px;
+            max-height: calc(100vh - 90px);
+            overflow-y: auto;
+            background: rgba(11,12,17,0.96);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            box-shadow: var(--dc-shadow);
+            padding: 10px;
+            display: none;
+            z-index: 20;
+        }
+
+        .plugin-panel.open { display: block; }
+
+        .plugin-panel h4 {
+            margin: 8px 8px 10px;
+            color: var(--dc-muted);
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .plugin {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 8px;
+            border-radius: 12px;
+        }
+
+        .plugin:hover { background: rgba(255,255,255,0.03); }
+
+        .plugin-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,0.05);
+            color: var(--dc-accent);
+        }
+
+        .plugin-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .plugin-copy strong {
+            display: block;
+            font-size: 0.92rem;
+        }
+
+        .plugin-copy span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--dc-muted);
+            margin-top: 2px;
+        }
+
+        .switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch span {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.18);
+            border-radius: 999px;
+            transition: 0.2s ease;
+        }
+        .switch span::before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            transition: 0.2s ease;
+        }
+        .switch input:checked + span { background: var(--dc-accent); }
+        .switch input:checked + span::before { transform: translateX(17px); }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            padding: 6px 4px 0;
+        }
+
+        .swatch {
+            height: 32px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .swatch.sel { border-color: white; }
+
+        .bg-input {
+            width: calc(100% - 12px);
+            margin: 6px 6px 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            color: var(--dc-text);
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .plugin-foot {
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--dc-muted);
+            font-size: 0.72rem;
+            line-height: 1.4;
+        }
+
+        .discord-page .super-button-wrapper { right: 20px; bottom: 96px; }
+
+        .private-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            color: var(--dc-text);
+            font-size: 0.86rem;
+        }
+
+        .private-toggle input { accent-color: var(--dc-accent); }
+
+        .plugin-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 8px;
+            color: var(--dc-text);
+            font-size: 0.86rem;
+        }
+
+        .plugin-toggle .copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .plugin-toggle .copy strong {
+            display: block;
+            font-size: 0.92rem;
+        }
+
+        .plugin-toggle .copy span {
+            display: block;
+            margin-top: 2px;
+            color: var(--dc-muted);
+            font-size: 0.75rem;
+        }
+
+        .cleanup-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+
+        .cleanup-controls select {
+            flex: 1;
+            min-width: 0;
+            padding: 9px 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 9px;
+            background: var(--dc-input);
+            color: var(--dc-text);
+        }
+
+        .cleanup-controls button {
+            padding: 9px 10px;
+            border: 0;
+            border-radius: 9px;
+            background: #a83d48;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cleanup-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .composer-status { min-height: 1.2em; padding: 0 20px 8px; color: var(--dc-muted); font-size: 0.78rem; }
+        .empty-state a { color: #aeb7ff; }
+
+        .emoji-tray {
+            position: absolute;
+            right: 18px;
+            bottom: 82px;
+            width: min(310px, calc(100vw - 32px));
+            background: rgba(11,12,17,0.96);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            box-shadow: var(--dc-shadow);
+            padding: 12px;
+            display: none;
+            z-index: 18;
+        }
+
+        .emoji-tray.open { display: block; }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0,1fr));
+            gap: 6px;
+        }
+
+        .emoji-grid button {
+            background: rgba(255,255,255,0.03);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .emoji-grid button:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+
+        .scrim {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.38);
+            z-index: 15;
+        }
+
+        .scrim.show { display: block; }
+
+        @media (max-width: 860px) {
+            .rail { width: 70px; }
+            .sidebar {
+                position: absolute;
+                left: 70px;
+                top: 0;
+                bottom: 0;
+                width: min(300px, 80vw);
+                transform: translateX(-120%);
+                transition: transform 0.2s ease;
+                z-index: 12;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .topbar { padding-left: 12px; }
+            .main { min-width: 0; }
+        }
+
+        @media (max-width: 520px) {
+            html, body {
+                width: 100vw;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .dc-app {
+                width: 100vw;
+                height: 100dvh;
+                max-width: 100vw;
+                min-height: 100dvh;
+                border-radius: 0;
+                border: none;
+            }
+
+            .rail {
+                width: 52px;
+                padding-top: 10px;
+                gap: 8px;
+            }
+
+            .rail-btn {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                font-size: 0.8rem;
+            }
+
+            .sidebar {
+                left: 52px;
+                width: min(260px, 72vw);
+            }
+
+            .sidebar-head {
+                min-height: 48px;
+                padding: 0 10px;
+            }
+
+            .topbar {
+                min-height: 48px;
+                padding: 0 8px 0 6px;
+                gap: 6px;
+            }
+
+            .account-chip {
+                display: none;
+            }
+
+            .title {
+                font-size: 0.84rem;
+            }
+
+            .messages {
+                padding: 8px 10px 6px;
+            }
+
+            .composer {
+                padding: 6px 8px 8px;
+                gap: 5px;
+                position: sticky;
+                bottom: 0;
+            }
+
+            .composer-box {
+                min-height: 44px;
+                border-radius: 10px;
+                padding: 0 10px;
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 0;
+            }
+
+            .composer-box input {
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .send-btn {
+                min-width: 42px;
+                padding: 0 10px;
+                height: 32px;
+                border-radius: 8px;
+                font-size: 0.76rem;
+                flex-shrink: 0;
+            }
+
+            .plugin-panel {
+                width: calc(100vw - 14px);
+                max-width: none;
+                left: 7px;
+                right: 7px;
+                top: 46px;
+                max-height: calc(100dvh - 54px);
+                padding: 7px;
+            }
+
+            .plugin {
+                padding: 7px 5px;
+            }
+
+            .plugin-copy strong,
+            .plugin-toggle .copy strong {
+                font-size: 0.76rem;
+            }
+
+            .plugin-copy span,
+            .plugin-toggle .copy span {
+                font-size: 0.64rem;
+            }
+
+            .plugin-foot {
+                font-size: 0.62rem;
+            }
+
+            input, select, button {
+                font-size: 16px !important;
+            }
+
+            .window-close {
+                right: 10px;
+                top: 12px;
+                width: 24px;
+                height: 24px;
+                font-size: 1.1rem;
+            }
+
+            .discord-page.no-selection .messages {
+                padding-top: 26px;
+            }
+
+            .discord-page.no-selection .empty-state {
+                gap: 8px;
+                padding: 20px 12px 12px;
+            }
+
+            .discord-page.no-selection .empty-state i {
+                width: 64px;
+                height: 64px;
+                font-size: 1.8rem;
+            }
+
+            .discord-page.no-selection .empty-state strong {
+                font-size: 1.2rem;
+            }
+
+            .discord-page.mobile-chat-open .rail,
+            .discord-page.mobile-chat-open .sidebar {
+                display: none;
+            }
+
+            .discord-page.mobile-chat-open .main {
+                width: 100%;
+                flex: 1 1 auto;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .rail {
+                width: 52px;
+            }
+
+            .sidebar {
+                left: 52px;
+                width: min(280px, 82vw);
+            }
+
+            .title {
+                font-size: 0.82rem;
+            }
+
+            .composer-box input {
+                font-size: 0.88rem;
+            }
+        }
+    </style>
+</head>
+<body class="discord-page">
+    <div class="dc-app">
+        <nav class="rail" aria-label="Servers">
+            <button class="rail-btn active" data-view="dm" title="Direct messages"><i class="fa-solid fa-user-group"></i></button>
+            <div class="rail-sep"></div>
+            <div id="guildRail"></div>
+        </nav>
+
+        <aside class="sidebar" id="sidebar" aria-label="Channels">
+            <div class="sidebar-head">
+                <span id="sideTitle">Direct Messages</span>
+            </div>
+            <div class="sidebar-list" id="sideList"></div>
+        </aside>
+
+        <div class="scrim" id="scrim"></div>
+
+        <main class="main">
+            <button class="window-close" type="button" aria-label="Close">×</button>
+            <header class="topbar">
+                <button class="icon-btn back-btn" id="openSide" aria-label="Open channels"><i class="fa-solid fa-bars"></i></button>
+                <div class="title-wrap">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span class="title" id="chatTitle">Loading conversations…</span>
+                </div>
+                <div class="account-chip" id="accountChip" hidden></div>
+                <div class="menu-btn-wrap">
+                    <button class="icon-btn" id="menuBtn" title="Options" aria-label="Options" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    <div class="plugin-panel" id="pluginPanel" role="dialog" aria-label="Client settings">
+                        <h4>Client</h4>
+                        <div class="plugin" style="display:block; padding-bottom: 6px;">
+                            <div class="plugin-copy" style="margin-bottom: 8px;"><strong>Accent</strong><span>Pick a color for the tab</span></div>
+                            <div class="theme-grid" id="swatches"></div>
+                        </div>
+                        <div class="plugin" style="display:block; padding-top: 0;">
+                            <div class="plugin-copy"><strong>Private channels</strong><span>Show cached private channels; Discord permissions still control access</span></div>
+                            <label class="private-toggle"><input type="checkbox" id="showPrivate" checked> Show private and locked channels</label>
+                        </div>
+                        <div class="plugin" style="display:block; padding-top: 0;">
+                            <div class="plugin-toggle">
+                                <div class="copy"><strong>Mobile chat mode</strong><span>Hide server list while a chat is open</span></div>
+                                <label class="switch"><input type="checkbox" id="mobileChatMode" checked><span></span></label>
+                            </div>
+                        </div>
+                        <div class="plugin" style="display:block; padding-top: 0;">
+                            <div class="plugin-toggle">
+                                <div class="copy"><strong>Deleted message highlight</strong><span>Show removed messages in red</span></div>
+                                <label class="switch"><input type="checkbox" id="deletedHighlight" checked><span></span></label>
+                            </div>
+                        </div>
+                        <div class="plugin" style="display:block; padding-top: 0;">
+                            <div class="plugin-copy"><strong>Message cleanup</strong><span>Delete only your own recent messages in the selected chat</span></div>
+                            <div class="cleanup-controls">
+                                <select id="deleteCount" aria-label="Number of your messages to delete">
+                                    <option value="5">Last 5</option>
+                                    <option value="10">Last 10</option>
+                                    <option value="25">Last 25</option>
+                                </select>
+                                <button id="deleteOwnMessages" type="button"><i class="fa-solid fa-trash" aria-hidden="true"></i> Delete mine</button>
+                            </div>
+                        </div>
+                        <div class="plugin-foot">These preferences are stored only in this browser session.</div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="messages" id="messages"></section>
+
+            <div class="emoji-tray" id="emojiTray">
+                <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
+
+            <form class="composer" id="composer" onsubmit="return false;">
+                <button type="button" class="icon-btn" id="emojiBtn" title="Emoji"><i class="fa-regular fa-face-smile"></i></button>
+                <div class="composer-box">
+                    <input id="msgInput" type="text" placeholder="Select a channel to start chatting" autocomplete="off" disabled>
+                </div>
+                <button type="button" class="send-btn" id="sendBtn" disabled>Send</button>
+            </form>
+            <div class="composer-status" id="composerStatus" role="status" aria-live="polite"></div>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            const THEMES = ['#5865f2', '#65d6ae', '#eb459e', '#faa61a', '#ed4245', '#57f287', '#9b84ec', '#00aff4'];
+            const KEY = 'kaizen_discord_ui';
+            const prefs = { accent: THEMES[0], bg: '', showPrivate: true, mobileChatMode: true, deletedHighlight: true };
+            const state = { account: null, guilds: [], dms: [], selected: null, kind: 'dm', messages: [], selectedGuildId: null, guildChannels: [], deletedIds: new Set() };
+
+            const $ = (id) => document.getElementById(id);
+
+            try {
+                const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+                if (saved) Object.assign(prefs, saved);
+            } catch (e) {}
+
+            function savePrefs() {
+                try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (e) {}
+            }
+
+            function escapeHtml(value) {
+                return String(value || '').replace(/[&<>"']/g, (char) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[char]));
+            }
+
+            function applyViewportFit() {
+                const app = document.querySelector('.dc-app');
+                if (!app) return;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const isMobile = width <= 520;
+                const mobileChatEnabled = prefs.mobileChatMode !== false;
+                app.style.width = isMobile ? '100vw' : '100vw';
+                app.style.height = isMobile ? '100dvh' : '100dvh';
+                app.style.maxWidth = '100vw';
+                app.style.maxHeight = '100dvh';
+                app.style.margin = '0';
+
+                if (isMobile && state.selected && mobileChatEnabled) {
+                    document.body.classList.add('mobile-chat-open');
+                } else {
+                    document.body.classList.remove('mobile-chat-open');
+                }
+            }
+
+            function applyPrefs() {
+                document.documentElement.style.setProperty('--dc-accent', prefs.accent);
+                document.documentElement.style.setProperty('--dc-accent-strong', prefs.accent === '#5865f2' ? '#4752c4' : prefs.accent);
+                const app = document.querySelector('.dc-app');
+                app.style.backgroundImage = '';
+                app.style.backgroundSize = 'cover';
+                app.style.backgroundPosition = 'center';
+                $('showPrivate').checked = prefs.showPrivate !== false;
+                $('mobileChatMode').checked = prefs.mobileChatMode !== false;
+                $('deletedHighlight').checked = prefs.deletedHighlight !== false;
+                document.querySelectorAll('.swatch').forEach((el) => {
+                    el.classList.toggle('sel', el.dataset.c === prefs.accent);
+                });
+                applyViewportFit();
+            }
+
+            function buildSwatches() {
+                $('swatches').innerHTML = THEMES.map((color) => (
+                    `<div class="swatch" data-c="${color}" style="background:${color}" role="button" aria-label="Accent ${color}"></div>`
+                )).join('');
+            }
+
+            function renderGuildRail() {
+                const rail = $('guildRail');
+                const guildButtons = state.guilds.map((guild) => {
+                    const firstLetter = (guild.name || 'G').slice(0, 1).toUpperCase();
+                    const isActive = state.selectedGuildId === guild.id && state.kind === 'guild';
+                    const icon = guild.icon ? `<img src="${escapeHtml(guild.icon)}" alt="">` : escapeHtml(firstLetter);
+                    return `<button class="rail-btn guild ${isActive ? 'active' : ''}" data-guild-id="${guild.id}" title="${escapeHtml(guild.name)}" aria-label="${escapeHtml(guild.name)}">${icon}</button>`;
+                }).join('');
+                rail.innerHTML = guildButtons;
+
+                document.querySelectorAll('.rail-btn[data-guild-id]').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const guildId = button.dataset.guildId;
+                        document.querySelectorAll('.rail-btn').forEach((item) => item.classList.toggle('active', item === button));
+                        state.kind = 'guild';
+                        state.selectedGuildId = guildId;
+                        $('sideTitle').textContent = state.guilds.find((g) => g.id === guildId)?.name || 'Guild';
+                        await loadGuildChannels(guildId);
+                        updateSidebar();
+                        const firstChannel = state.guildChannels.find((channel) => channel.kind === 'text');
+                        if (firstChannel) await selectChannel(firstChannel.id, firstChannel.name, firstChannel.kind);
+                        else {
+                            state.selected = null;
+                            $('chatTitle').textContent = 'No text channels';
+                            $('messages').innerHTML = '<div class="empty-state"><i class="fa-solid fa-hashtag"></i><strong>No text channels found</strong><div>This server has no accessible text channels.</div></div>';
+                        }
+                    });
+                });
+            }
+
+            function renderSidebarList(items) {
+                const visibleItems = state.kind === 'guild' && prefs.showPrivate === false
+                    ? items.filter((item) => !item.private && item.canView !== false)
+                    : items;
+                if (!visibleItems || !visibleItems.length) {
+                    $('sideList').innerHTML = '<div class="sidebar-empty">Nothing to show here yet.</div>';
+                    return;
+                }
+
+                const markup = visibleItems.map((item) => {
+                    const isSelected = state.selected === item.id;
+                    const isLocked = item.canView === false;
+                    const showLock = item.private || isLocked;
+                    const typeIcon = item.type === 'dm' ? 'fa-user' : item.private ? 'fa-lock' : item.kind === 'voice' ? 'fa-volume-high' : 'fa-hashtag';
+                    const avatar = item.icon ?
+                        `<img src="${item.icon}" alt="${escapeHtml(item.name)}">` :
+                        `<span>${escapeHtml((item.name || 'D').slice(0, 1).toUpperCase())}</span>`;
+
+                    return `
+                        <div class="row ${isSelected ? 'active' : ''} ${isLocked ? 'locked' : ''}" data-target-id="${item.id}" data-kind="${item.type === 'dm' ? 'dm' : 'guild'}">
+                            ${item.type === 'dm' ? `<div class="avatar">${avatar}<span class="online-dot"></span></div>` : `<div class="channel-icon"><i class="fa-solid ${typeIcon}"></i></div>`}
+                            <span class="name">${escapeHtml(item.name)}</span>
+                            ${showLock && item.type !== 'dm' ? `<i class="fa-solid fa-lock private-lock" title="${isLocked ? 'Private channel: no permission to view' : 'Private channel'}" aria-label="${isLocked ? 'Private channel, no permission to view' : 'Private channel'}"></i>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                $('sideList').innerHTML = markup;
+
+                $('sideList').querySelectorAll('.row').forEach((row) => {
+                    row.addEventListener('click', () => {
+                        const id = row.dataset.targetId;
+                        const kind = row.dataset.kind;
+                        state.selected = id;
+                        state.kind = kind;
+                        if (kind === 'dm') {
+                            selectDM(id);
+                        } else {
+                            const channel = state.guildChannels.find((c) => c.id === id);
+                            if (channel?.canView === false) {
+                                $('chatTitle').textContent = `#${channel.name}`;
+                                $('msgInput').disabled = true;
+                                $('sendBtn').disabled = true;
+                                $('msgInput').placeholder = 'You do not have permission to view this channel';
+                                $('composerStatus').textContent = '';
+                                $('messages').innerHTML = '<div class="empty-state"><i class="fa-solid fa-lock"></i><strong>Private channel</strong><div>Your Discord account does not have permission to view this channel. Access cannot be granted by this dashboard.</div></div>';
+                                closeSide();
+                                applyViewportFit();
+                            } else if (channel) {
+                                selectChannel(channel.id, channel.name, channel.kind);
+                            }
+                        }
+                        updateSidebar();
+                    });
+                });
+            }
+
+            function updateSidebar() {
+                if (state.kind === 'dm') {
+                    $('sideTitle').textContent = 'Direct Messages';
+                    renderSidebarList(state.dms);
+                } else {
+                    $('sideTitle').textContent = state.guilds.find((g) => g.id === state.selectedGuildId)?.name || 'Guild';
+                    renderSidebarList(state.guildChannels || []);
+                }
+            }
+
+            async function fetchOverview() {
+                const res = await fetch('/api/discord/tab/overview');
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Could not load Discord data');
+                state.account = data.account;
+                state.guilds = data.guilds || [];
+                state.dms = (data.dms || []).map((dm) => ({ ...dm, type: 'dm' }));
+                if (state.account) {
+                    $('accountChip').hidden = false;
+                    $('accountChip').innerHTML = `<img src="${escapeHtml(state.account.avatar)}" alt=""><span>${escapeHtml(state.account.tag)}</span>`;
+                }
+                renderGuildRail();
+                state.kind = 'none';
+                state.selected = null;
+                state.selectedGuildId = null;
+                $('sideTitle').textContent = 'Select a server';
+                $('sideList').innerHTML = '<div class="sidebar-empty">No channels available</div>';
+                renderEmptySelection();
+            }
+
+                async function loadGuildChannels(guildId) {
+                const res = await fetch(`/api/discord/tab/channels/${guildId}`);
+                const channels = await res.json();
+                if (!res.ok) throw new Error(channels.error || 'Could not load channels');
+                state.guildChannels = channels;
+            }
+
+            async function selectDM(id) {
+                const dm = state.dms.find((item) => item.id === id);
+                if (!dm) return;
+                document.body.classList.remove('no-selection');
+                state.kind = 'dm';
+                state.selected = id;
+                state.deletedIds.clear();
+                $('chatTitle').textContent = dm.name;
+                $('msgInput').disabled = false;
+                $('sendBtn').disabled = false;
+                $('msgInput').placeholder = `Message ${dm.name}`;
+                await loadMessages(id);
+                closeSide();
+                applyViewportFit();
+            }
+
+            async function selectChannel(id, name, kind) {
+                document.body.classList.remove('no-selection');
+                state.selected = id;
+                state.deletedIds.clear();
+                $('chatTitle').textContent = kind === 'voice' ? name : `#${name}`;
+                const isVoice = kind === 'voice';
+                $('msgInput').disabled = isVoice;
+                $('sendBtn').disabled = isVoice;
+                $('msgInput').placeholder = isVoice ? 'Voice channels are not text chats' : `Message #${name}`;
+                await loadMessages(id);
+                closeSide();
+                applyViewportFit();
+            }
+
+            async function loadMessages(channelId) {
+                try {
+                    const res = await fetch(`/api/discord/tab/messages/${channelId}`);
+                    const messages = await res.json();
+                    if (!res.ok) throw new Error(messages.error || 'Could not load messages');
+                    state.messages = messages || [];
+                    renderMessages();
+                } catch (error) {
+                    state.messages = [];
+                    renderMessages();
+                }
+            }
+
+            function renderEmptySelection() {
+                const box = $('messages');
+                document.body.classList.add('no-selection');
+                $('chatTitle').textContent = 'Select a server';
+                $('msgInput').disabled = true;
+                $('sendBtn').disabled = true;
+                $('msgInput').placeholder = 'Select a channel to message';
+                $('composerStatus').textContent = '';
+                box.innerHTML = `
+                    <div class="empty-state" style="padding-top: 60px;">
+                        <i class="fa-regular fa-message" style="width: 58px; height: 58px; border-radius: 16px; font-size: 2rem;"></i>
+                        <strong style="font-size: 1.6rem; font-weight: 500; margin-top: 8px; color: rgba(255,255,255,0.88);">No messages yet</strong>
+                        <div style="font-size: 0.96rem; color: rgba(255,255,255,0.72); max-width: 360px; line-height: 1.5;">Select a channel to view messages, or start a new conversation.</div>
+                    </div>
+                `;
+            }
+
+            function renderMessages() {
+                const box = $('messages');
+                if (!state.selected) {
+                    document.body.classList.add('no-selection');
+                    renderEmptySelection();
+                    return;
+                }
+
+                document.body.classList.remove('no-selection');
+                if (window.innerWidth <= 520) {
+                    document.body.classList.add('mobile-chat-open');
+                }
+                if (!state.messages.length) {
+                    box.innerHTML = '<div class="empty-state"><i class="fa-regular fa-message"></i><div>No messages yet. Say hi.</div></div>';
+                    return;
+                }
+
+                box.innerHTML = state.messages.map((message) => {
+                    const deleted = prefs.deletedHighlight !== false && state.deletedIds.has(message.id);
+                    return `
+                        <div class="message-row ${deleted ? 'deleted' : ''}">
+                            <div class="message-avatar"><img src="${message.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}" alt="${escapeHtml(message.author)}"></div>
+                            <div class="message-body">
+                                <div class="message-meta">
+                                    <span class="message-author">${escapeHtml(message.author)}</span>
+                                    <span class="message-time">${escapeHtml(message.time)}</span>
+                                </div>
+                                <div class="message-content">${escapeHtml(message.content)}</div>
+                                ${deleted ? '<div class="deleted-banner"><i class="fa-solid fa-circle-exclamation"></i> Deleted</div>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                box.scrollTop = box.scrollHeight;
+            }
+
+            async function sendMessage() {
+                const content = $('msgInput').value.trim();
+                if (!state.selected || !content) return;
+                $('sendBtn').disabled = true;
+                $('composerStatus').textContent = 'Sending…';
+                try {
+                    const response = await fetch('/api/discord/tab/send-message', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ channelId: state.selected, content })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error(result.message || 'Could not send the message.');
+                    $('msgInput').value = '';
+                    $('composerStatus').textContent = 'Message sent';
+                    await loadMessages(state.selected);
+                } catch (error) {
+                    $('composerStatus').textContent = error.message;
+                } finally {
+                    $('sendBtn').disabled = $('msgInput').disabled;
+                }
+            }
+
+            async function deleteOwnMessages() {
+                if (!state.selected) {
+                    $('composerStatus').textContent = 'Select a DM or channel first';
+                    return;
+                }
+                const count = Number($('deleteCount').value);
+                if (!window.confirm(`Delete up to your last ${count} messages from this chat? This cannot be undone.`)) return;
+
+                const button = $('deleteOwnMessages');
+                button.disabled = true;
+                try {
+                    const response = await fetch('/api/discord/tab/delete-own-messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ channelId: state.selected, count })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) throw new Error(result.message || 'Could not delete messages.');
+                    if (Array.isArray(result.deletedIds)) {
+                        result.deletedIds.forEach((id) => state.deletedIds.add(id));
+                    }
+                    $('composerStatus').textContent = `Deleted ${result.deleted} of your messages`;
+                    await loadMessages(state.selected);
+                } catch (error) {
+                    $('composerStatus').textContent = error.message;
+                } finally {
+                    button.disabled = false;
+                }
+            }
+
+            function togglePanel(force) {
+                const panel = $('pluginPanel');
+                const open = typeof force === 'boolean' ? force : !panel.classList.contains('open');
+                panel.classList.toggle('open', open);
+                panel.style.display = open ? 'block' : 'none';
+                $('menuBtn').classList.toggle('active', open);
+                $('menuBtn').setAttribute('aria-expanded', String(open));
+            }
+
+            function openSide() { $('sidebar').classList.add('open'); $('scrim').classList.add('show'); }
+            function closeSide() { $('sidebar').classList.remove('open'); $('scrim').classList.remove('show'); }
+
+            function bindUI() {
+                togglePanel(false);
+
+                $('menuBtn').addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    togglePanel();
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!event.target.closest('#pluginPanel') && !event.target.closest('#menuBtn')) togglePanel(false);
+                    if (!event.target.closest('#emojiTray') && !event.target.closest('#emojiBtn')) $('emojiTray').classList.remove('open');
+                });
+
+                $('scrim').addEventListener('click', closeSide);
+                $('openSide').addEventListener('click', () => {
+                    if (window.innerWidth <= 520 && state.selected && prefs.mobileChatMode !== false) {
+                        document.body.classList.remove('mobile-chat-open');
+                        state.selected = null;
+                        renderEmptySelection();
+                        return;
+                    }
+                    openSide();
+                });
+                document.querySelector('.rail-btn[data-view="dm"]').addEventListener('click', () => {
+                    state.kind = 'dm';
+                    state.selectedGuildId = null;
+                    document.querySelectorAll('.rail-btn').forEach((button) => {
+                        button.classList.toggle('active', button.dataset.view === 'dm');
+                    });
+                    updateSidebar();
+                    if (state.dms[0]) selectDM(state.dms[0].id);
+                    else {
+                        state.selected = null;
+                        $('chatTitle').textContent = 'No direct messages';
+                        $('messages').innerHTML = '<div class="empty-state"><i class="fa-regular fa-comments"></i><strong>No direct messages found</strong><div>There are no cached DM conversations for this account.</div></div>';
+                    }
+                });
+                $('sendBtn').addEventListener('click', sendMessage);
+                $('msgInput').addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        sendMessage();
+                    }
+                });
+                $('showPrivate').addEventListener('change', (event) => {
+                    prefs.showPrivate = event.target.checked;
+                    savePrefs();
+                    updateSidebar();
+                });
+                $('mobileChatMode').addEventListener('change', (event) => {
+                    prefs.mobileChatMode = event.target.checked;
+                    savePrefs();
+                    applyViewportFit();
+                    if (state.selected && window.innerWidth <= 520) {
+                        document.body.classList.toggle('mobile-chat-open', prefs.mobileChatMode !== false);
+                    }
+                });
+                $('deletedHighlight').addEventListener('change', (event) => {
+                    prefs.deletedHighlight = event.target.checked;
+                    savePrefs();
+                    renderMessages();
+                });
+                $('deleteOwnMessages').addEventListener('click', deleteOwnMessages);
+                $('swatches').addEventListener('click', (event) => {
+                    const swatch = event.target.closest('.swatch');
+                    if (!swatch) return;
+                    prefs.accent = swatch.dataset.c;
+                    savePrefs();
+                    applyPrefs();
+                });
+
+                $('emojiBtn').addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    $('emojiTray').classList.toggle('open');
+                });
+
+                const EMOJI = ['😀','😂','😍','🤔','😎','👍','🎉','🔥','💯','✅','✨','🚀','😴','🤝','👀','❤️'];
+                $('emojiGrid').innerHTML = EMOJI.map((emoji) => `<button type="button" data-emoji="${emoji}">${emoji}</button>`).join('');
+                $('emojiGrid').addEventListener('click', (event) => {
+                    const button = event.target.closest('button');
+                    if (!button) return;
+                    $('msgInput').value += button.dataset.emoji || '';
+                    $('msgInput').focus();
+                });
+
+            }
+
+            buildSwatches();
+            applyViewportFit();
+            applyPrefs();
+            bindUI();
+            window.addEventListener('resize', applyViewportFit);
+            fetchOverview().catch((error) => {
+                $('chatTitle').textContent = 'Discord unavailable';
+                const connectLink = error.message.includes('Connect a Discord account')
+                    ? '<a href="/">Go to dashboard sign-in</a>'
+                    : '';
+                $('messages').innerHTML = `<div class="empty-state error"><i class="fa-solid fa-wifi"></i><strong>Could not load Discord data</strong><div>${escapeHtml(error.message)}</div>${connectLink}<button class="send-btn" type="button" id="retryLoad">Try again</button></div>`;
+                $('retryLoad').addEventListener('click', () => fetchOverview().catch((retryError) => {
+                    $('messages').querySelector('.empty-state div').textContent = retryError.message;
+                }));
+            });
+        })();
+    </script>
+    <%- include('partials/super_button') %>
+</body>
+</html>

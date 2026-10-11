@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPC Configuration - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .rpc-container {
+            width: 95%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        /* Platform Selection styles */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .platform-btn {
+            background: #050508;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        .platform-btn img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .platform-btn:hover {
+            border-color: rgba(20, 123, 97, 0.5);
+            background: rgba(20, 123, 97, 0.05);
+        }
+
+        .platform-btn.active {
+            border-color: #147b61;
+            background: rgba(20, 123, 97, 0.1);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        .page-loaded .rpc-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .rpc-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .rpc-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes neonPulse {
+            0% {
+                box-shadow: 0 0 5px rgba(20, 123, 97, 0.5), inset 0 0 5px rgba(20, 123, 97, 0.2);
+                border-color: rgba(20, 123, 97, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(20, 123, 97, 1), inset 0 0 10px rgba(20, 123, 97, 0.5);
+                border-color: rgba(184, 125, 248, 1);
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(20, 123, 97, 0.5), inset 0 0 5px rgba(20, 123, 97, 0.2);
+                border-color: rgba(20, 123, 97, 0.5);
+            }
+        }
+
+        .neon-card {
+            border: 2px solid #147b61 !important;
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulseRed {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 60, 60, 0.5), inset 0 0 5px rgba(255, 60, 60, 0.2);
+                border-color: rgba(255, 60, 60, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(255, 60, 60, 1), inset 0 0 10px rgba(255, 60, 60, 0.5);
+                border-color: rgba(255, 100, 100, 1);
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(255, 60, 60, 0.5), inset 0 0 5px rgba(255, 60, 60, 0.2);
+                border-color: rgba(255, 60, 60, 0.5);
+            }
+        }
+
+        .neon-card-red {
+            border: 2px solid #ff3c3c !important;
+            animation: neonPulseRed 2s infinite alternate;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        select.input-field {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        /* Toggle Switch */
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #9d14ff;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        @media(max-width: 768px) {
+
+            .form-grid,
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rpc-container {
+                padding: 80px 15px 100px;
+                width: 100%;
+            }
+
+            .back-btn {
+                top: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="rpc-container">
+        <div class="rpc-header">
+            <h1>Rich Presence</h1>
+            <p>Customize your activity status visible to others.</p>
+        </div>
+
+        <form id="rpcForm" onsubmit="saveRpc(event)">
+
+            <div class="section-card">
+                <div class="status-row">
+                    <span style="font-size: 1.2rem; font-weight:600;">Enable RPC</span>
+                    <label class="switch">
+                        <input type="checkbox" id="enabled" onchange="saveRpc(null, true)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="input-label">Activity Type</label>
+                        <select id="type" class="input-field">
+                            <option value="PLAYING">Playing</option>
+                            <option value="STREAMING">Streaming</option>
+                            <option value="LISTENING">Listening</option>
+                            <option value="WATCHING">Watching</option>
+                            <option value="COMPETING">Competing</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Name (Top Line)</label>
+                        <input type="text" id="name" class="input-field" placeholder="e.g. Kaizen+ Bot">
+                    </div>
+                    <div class="input-group full-width">
+                        <label class="input-label">Application ID (Optional)</label>
+                        <input type="text" id="applicationId" class="input-field" placeholder="Default: Your User ID">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">Details & State</div>
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label class="input-label">Details (Second Line)</label>
+                        <input type="text" id="details" class="input-field" placeholder="e.g. Preparing for battle">
+                    </div>
+                    <div class="input-group full-width">
+                        <div class="input-group full-width">
+                            <label class="input-label">State (Third Line)</label>
+                            <input type="text" id="state" class="input-field" placeholder="e.g. Level 99">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Time Details & Progress Bar</div>
+
+                    <div class="status-row" style="margin-bottom: 15px;">
+                        <span style="font-size: 1rem; color:#ccc;">Enable Progress Bar (Spotify Style)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="enableProgressBar" onchange="toggleProgressBarOptions()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-grid" id="normalTimeGroup">
+                        <div class="input-group">
+                            <label class="input-label" id="lblStartTime">Start Time From Now</label>
+                            <input type="number" id="timeVal" class="input-field" placeholder="e.g. 5" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" id="lblStartUnit">Unit</label>
+                            <select id="timeUnit" class="input-field">
+                                <option value="minute">Minutes</option>
+                                <option value="hour">Hours</option>
+                                <option value="day">Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" id="endTimeGroup" style="display: none; margin-top: 15px;">
+                        <div class="input-group">
+                            <label class="input-label">Total Duration (End Time)</label>
+                            <input type="number" id="endVal" class="input-field" placeholder="e.g. 5" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Unit</label>
+                            <select id="endUnit" class="input-field">
+                                <option value="minute">Minutes</option>
+                                <option value="hour">Hours</option>
+                                <option value="day">Days</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card neon-card">
+                    <div class="section-title">Spoofing (Application Override)</div>
+                    <div class="status-row" style="margin-bottom: 5px;">
+                        <span style="font-size: 1rem; color:#ccc;">Enable Spoofing</span>
+                        <label class="switch">
+                            <input type="checkbox" id="spoofEnabled" onchange="toggleSpoofing()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 15px; margin-top:0;">Enabling this will
+                        override the Application ID above with official app IDs to show their icons.</p>
+
+                    <div id="spoofOptionContainer" style="opacity: 0.5; pointer-events: none; transition: 0.3s;">
+                        <input type="hidden" id="spoofType" value="none">
+                        <div class="platform-grid">
+                            <div class="platform-btn" id="btnCrunchyroll" onclick="selectSpoof('crunchyroll')">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png"
+                                    alt="CR">
+                                Crunchyroll
+                            </div>
+                            <div class="platform-btn" id="btnPlaystation" onclick="selectSpoof('playstation')">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Playstation_logo_colour.svg"
+                                    alt="PS">
+                                PlayStation 5
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card neon-card-red" id="gameSpoofingSection">
+                    <div class="section-title" style="color: #ff6b81; border-color: rgba(255,107,129,0.2);">Game Spoofing</div>
+                    <div class="status-row" style="margin-bottom: 5px;">
+                        <span style="font-size: 1rem; color:#ccc;">Enable Game Spoofing</span>
+                        <label class="switch">
+                            <input type="checkbox" id="gameSpoofing" onchange="toggleGameSpoofing(true)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 15px; margin-top:0;">Enabling this will override ALL other RPC settings above and natively display a pre-built custom game.</p>
+
+                    <div id="gameSpoofOptionContainer" style="opacity: 0.5; pointer-events: none; transition: 0.3s;">
+                        <input type="hidden" id="selectedGame" value="none">
+                        <div class="platform-grid">
+                            <div class="platform-btn" id="btnMinecraft" onclick="selectGame('minecraft', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1402418491272986635/166fbad351ecdd02d11a3b464748f66b.png?size=240&keep_aspect_ratio=false" alt="MC" style="border-radius: 4px;">
+                                Minecraft
+                            </div>
+                            <div class="platform-btn" id="btnGenshin" onclick="selectGame('genshin', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/762434991303950386/eb0e25b739e4fa38c1671a3d1edcd1e0.png?size=240&keep_aspect_ratio=false" alt="GI" style="border-radius: 4px;">
+                                Genshin Impact
+                            </div>
+                            <div class="platform-btn" id="btnWutheringWaves" onclick="selectGame('wuthering_waves', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1247227126416146462/c7bb04bdddaa82cf045b02df7168365e.png?size=240&keep_aspect_ratio=false" alt="WW" style="border-radius: 4px;">
+                                Wuthering Waves
+                            </div>
+                            <div class="platform-btn" id="btnForzaHorizon5" onclick="selectGame('forza_horizon_5', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/905961880789590076/229e83c3817d45ecabdaa2f343eadd34.png?size=240&keep_aspect_ratio=false" alt="FH5" style="border-radius: 4px;">
+                                Forza Horizon 5
+                            </div>
+                            <div class="platform-btn" id="btnArknightsEndfield" onclick="selectGame('arknights_endfield', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1461154307171811401/a1c43f46f274856e6fb9edc8afda149d.png?size=240&keep_aspect_ratio=false" alt="AE" style="border-radius: 4px;">
+                                Arknights:Endfield
+                            </div>
+                            <div class="platform-btn" id="btnValorant" onclick="selectGame('valorant', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/700136079562375258/e55fc8259df1548328f977d302779ab7.png?size=240&keep_aspect_ratio=false" alt="VAL" style="border-radius: 4px;">
+                                Valorant
+                            </div>
+                            <div class="platform-btn" id="btnGta5" onclick="selectGame('gta5', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1402418714716143646/b77111108195cd5e4dd2011dd39bf67d.png?size=240&keep_aspect_ratio=false" alt="GTA5" style="border-radius: 4px;">
+                                GTA5
+                            </div>
+                            <div class="platform-btn" id="btnVrchat" onclick="selectGame('vrchat', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/398632010442211348/5881acfa9405ee69158591ec1a791c74.png?size=240&keep_aspect_ratio=false" alt="VRC" style="border-radius: 4px;">
+                                VRChat
+                            </div>
+                            <div class="platform-btn" id="btnCs2" onclick="selectGame('cs2', true)">
+                                <img src="https://cdn.discordapp.com/app-icons/1158877933042143272/558f5a26ecb3b17c3dea3d15c1df537a.png?size=80&keep_aspect_ratio=false" alt="CS2" style="border-radius: 4px;">
+                                Counter-Strike 2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Images (Assets)</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Large Image URL</label>
+                            <input type="text" id="largeImage" class="input-field" placeholder="https://...">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Large Image Tooltip</label>
+                            <input type="text" id="largeText" class="input-field"
+                                placeholder="Text when hovering image">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Small Image URL</label>
+                            <input type="text" id="smallImage" class="input-field" placeholder="https://...">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Small Image Tooltip</label>
+                            <input type="text" id="smallText" class="input-field"
+                                placeholder="Text when hovering small image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Interactive Buttons</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">Button 1 Label</label>
+                            <input type="text" id="button1Text" class="input-field" placeholder="Visit Website">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Button 1 URL</label>
+                            <input type="text" id="button1Url" class="input-field" placeholder="https://...">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Button 2 Label</label>
+                            <input type="text" id="button2Text" class="input-field" placeholder="Join Server">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Button 2 URL</label>
+                            <input type="text" id="button2Url" class="input-field" placeholder="https://...">
+                        </div>
+                    </div>
+                    <p style="color: #666; font-size: 0.8rem; margin-top: -10px; font-style: italic;">Note: Discord
+                        prevents
+                        you from clicking your own RPC buttons. Ask others to verify they work.</p>
+                </div>
+
+                <button type="submit" class="btn-save" id="saveBtn">Save Configuration</button>
+        </form>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            // Load Data
+            window.onload = async () => {
+                try {
+                    const res = await fetch('/api/rpc');
+                    const data = await res.json();
+
+                    document.getElementById('enabled').checked = data.enabled;
+                    document.getElementById('type').value = data.type || 'PLAYING';
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('applicationId').value = data.applicationId || '';
+                    document.getElementById('details').value = data.details || '';
+                    document.getElementById('state').value = data.state || '';
+
+                    const spoofEnabled = data.spoofEnabled || false;
+                    document.getElementById('spoofEnabled').checked = spoofEnabled;
+                    document.getElementById('spoofType').value = data.spoofType || 'none';
+                    
+                    const gameSpoofing = data.gameSpoofing || false;
+                    document.getElementById('gameSpoofing').checked = gameSpoofing;
+                    document.getElementById('selectedGame').value = data.selectedGame || 'none';
+                    
+                    toggleSpoofing(); // Initialize spoof UI
+                    toggleGameSpoofing(); // Initialize game spoof UI
+
+                    const enableProgressBar = data.enableProgressBar || false;
+                    document.getElementById('enableProgressBar').checked = enableProgressBar;
+
+                    // Reverse Calculate Time (Start)
+                    if (data.startTimestamp && data.startTimestamp > 0) {
+                        const ms = data.startTimestamp;
+                        if (ms >= 86400000 && ms % 86400000 === 0) {
+                            document.getElementById('timeVal').value = ms / 86400000;
+                            document.getElementById('timeUnit').value = 'day';
+                        } else if (ms >= 3600000 && ms % 3600000 === 0) {
+                            document.getElementById('timeVal').value = ms / 3600000;
+                            document.getElementById('timeUnit').value = 'hour';
+                        } else if (ms >= 60000) {
+                            document.getElementById('timeVal').value = Math.floor(ms / 60000);
+                            document.getElementById('timeUnit').value = 'minute';
+                        } else {
+                            document.getElementById('timeVal').value = '';
+                            document.getElementById('timeUnit').value = 'none';
+                        }
+                    } else {
+                        document.getElementById('timeUnit').value = 'none';
+                    }
+
+                    // Reverse Calculate Time (End)
+                    if (data.endTimestamp && data.endTimestamp > 0) {
+                        const ms = data.endTimestamp;
+                        if (ms >= 86400000 && ms % 86400000 === 0) {
+                            document.getElementById('endVal').value = ms / 86400000;
+                            document.getElementById('endUnit').value = 'day';
+                        } else if (ms >= 3600000 && ms % 3600000 === 0) {
+                            document.getElementById('endVal').value = ms / 3600000;
+                            document.getElementById('endUnit').value = 'hour';
+                        } else if (ms >= 60000) {
+                            document.getElementById('endVal').value = Math.floor(ms / 60000);
+                            document.getElementById('endUnit').value = 'minute';
+                        } else {
+                            document.getElementById('endVal').value = '';
+                            document.getElementById('endUnit').value = 'none';
+                        }
+                    } else {
+                        document.getElementById('endUnit').value = 'none';
+                    }
+
+                    toggleProgressBarOptions(true);
+
+                    document.getElementById('largeImage').value = data.largeImage || '';
+                    document.getElementById('largeText').value = data.largeText || '';
+                    document.getElementById('smallImage').value = data.smallImage || '';
+                    document.getElementById('smallText').value = data.smallText || '';
+
+                    document.getElementById('button1Text').value = data.button1Text || '';
+                    document.getElementById('button1Url').value = data.button1Url || '';
+                    document.getElementById('button2Text').value = data.button2Text || '';
+                    document.getElementById('button2Url').value = data.button2Url || '';
+                } catch (e) { console.error(e); }
+            };
+
+            async function saveRpc(e, silent = false) {
+                if (e) e.preventDefault();
+
+                const btn = document.getElementById('saveBtn');
+                const originalText = "Save Configuration"; // Hardcoded default
+
+                if (!silent) {
+                    btn.innerText = "Saving...";
+                    btn.disabled = true;
+                }
+
+                const data = {
+                    enabled: document.getElementById('enabled').checked,
+                    type: document.getElementById('type').value,
+                    name: document.getElementById('name').value,
+                    applicationId: document.getElementById('applicationId').value,
+                    details: document.getElementById('details').value,
+                    state: document.getElementById('state').value,
+
+                    spoofEnabled: document.getElementById('spoofEnabled').checked,
+                    spoofType: document.getElementById('spoofType').value,
+
+                    gameSpoofing: document.getElementById('gameSpoofing').checked,
+                    selectedGame: document.getElementById('selectedGame').value,
+
+                    enableProgressBar: document.getElementById('enableProgressBar').checked,
+                    startTimestamp: calculateMs('timeVal', 'timeUnit'),
+                    endTimestamp: calculateMs('endVal', 'endUnit'),
+
+                    largeImage: document.getElementById('largeImage').value,
+                    largeText: document.getElementById('largeText').value,
+                    smallImage: document.getElementById('smallImage').value,
+                    smallText: document.getElementById('smallText').value,
+
+                    button1Text: document.getElementById('button1Text').value,
+                    button1Url: document.getElementById('button1Url').value,
+                    button2Text: document.getElementById('button2Text').value,
+                    button2Url: document.getElementById('button2Url').value,
+                };
+
+                try {
+                    const res = await fetch('/api/rpc', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+
+                    if (result.success) {
+                        if (!silent) {
+                            btn.innerText = "Saved Successfully!";
+                            btn.style.background = "#2ecc71"; // Green
+                            setTimeout(() => {
+                                btn.innerText = originalText;
+                                btn.style.background = ""; // Reset
+                                btn.disabled = false;
+                            }, 2000);
+                        }
+                    } else {
+                        if (!silent) {
+                            alert('Failed to save.');
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
+                    }
+                } catch (e) {
+                    console.error(e);
+                    if (!silent) {
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                }
+            }
+
+            function calculateMs(valId, unitId) {
+                const val = parseInt(document.getElementById(valId).value);
+                const unit = document.getElementById(unitId).value;
+
+                if (!val || val < 0 || unit === 'none') return 0;
+
+                if (unit === 'minute') return val * 60 * 1000;
+                if (unit === 'hour') return val * 60 * 60 * 1000;
+                if (unit === 'day') return val * 24 * 60 * 60 * 1000;
+                return 0;
+            }
+
+            function toggleProgressBarOptions(isInit = false) {
+                const isEnabled = document.getElementById('enableProgressBar').checked;
+                const endGroup = document.getElementById('endTimeGroup');
+                const lblStart = document.getElementById('lblStartTime');
+
+                if (isEnabled) {
+                    endGroup.style.display = 'grid';
+                    lblStart.innerText = "Time Passed Already (Position)";
+                } else {
+                    endGroup.style.display = 'none';
+                    lblStart.innerText = "Start Time From Now";
+                }
+            }
+
+            function toggleSpoofing() {
+                const isEnabled = document.getElementById('spoofEnabled').checked;
+                const container = document.getElementById('spoofOptionContainer');
+                const appIdField = document.getElementById('applicationId');
+
+                if (isEnabled) {
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = 'auto';
+                    appIdField.disabled = true;
+                    appIdField.style.opacity = '0.5';
+                    // Auto-select first if none selected
+                    if (document.getElementById('spoofType').value === 'none') {
+                        selectSpoof('crunchyroll');
+                    } else {
+                        selectSpoof(document.getElementById('spoofType').value);
+                    }
+                } else {
+                    container.style.opacity = '0.5';
+                    container.style.pointerEvents = 'none';
+                    appIdField.disabled = false;
+                    appIdField.style.opacity = '1';
+                }
+            }
+
+            function selectSpoof(type) {
+                document.getElementById('spoofType').value = type;
+                document.getElementById('btnCrunchyroll').classList.remove('active');
+                document.getElementById('btnPlaystation').classList.remove('active');
+
+                if (type === 'crunchyroll') {
+                    document.getElementById('btnCrunchyroll').classList.add('active');
+                } else if (type === 'playstation') {
+                    document.getElementById('btnPlaystation').classList.add('active');
+                }
+            }
+
+            function toggleGameSpoofing(autoSave = false) {
+                const isEnabled = document.getElementById('gameSpoofing').checked;
+                const container = document.getElementById('gameSpoofOptionContainer');
+                
+                // Fields to disable
+                const fields = ['type', 'name', 'applicationId', 'details', 'state', 'largeImage', 'largeText', 'smallImage', 'smallText', 'button1Text', 'button1Url', 'button2Text', 'button2Url'];
+                
+                if (isEnabled) {
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = 'auto';
+                    
+                    if (document.getElementById('selectedGame').value === 'none') {
+                        selectGame('minecraft'); // this won't auto-save due to missing second param
+                    } else {
+                        selectGame(document.getElementById('selectedGame').value);
+                    }
+                    
+                    fields.forEach(f => {
+                        const el = document.getElementById(f);
+                        if (el) {
+                            el.disabled = true;
+                            el.style.opacity = '0.3';
+                        }
+                    });
+                    
+                    document.getElementById('spoofEnabled').checked = false;
+                    document.getElementById('spoofEnabled').disabled = true;
+                    toggleSpoofing(); // refresh normal spoofing
+                } else {
+                    container.style.opacity = '0.5';
+                    container.style.pointerEvents = 'none';
+                    
+                    fields.forEach(f => {
+                        const el = document.getElementById(f);
+                        if (el) {
+                            el.disabled = false;
+                            el.style.opacity = '1';
+                        }
+                    });
+
+                    document.getElementById('spoofEnabled').disabled = false;
+                }
+                
+                if (autoSave) saveRpc(null, true);
+            }
+            
+            function selectGame(game, autoSave = false) {
+                document.getElementById('selectedGame').value = game;
+                
+                // Clear active from all game buttons
+                document.querySelectorAll('#gameSpoofOptionContainer .platform-btn').forEach(btn => btn.classList.remove('active'));
+                
+                // We construct the expected ID based on camel case or just rely on a mapping
+                const gameToIdMap = {
+                    'minecraft': 'btnMinecraft',
+                    'genshin': 'btnGenshin',
+                    'wuthering_waves': 'btnWutheringWaves',
+                    'forza_horizon_5': 'btnForzaHorizon5',
+                    'arknights_endfield': 'btnArknightsEndfield',
+                    'valorant': 'btnValorant',
+                    'gta5': 'btnGta5',
+                    'vrchat': 'btnVrchat',
+                    'cs2': 'btnCs2'
+                };
+                
+                const activeBtnId = gameToIdMap[game];
+                if (activeBtnId) {
+                    const btn = document.getElementById(activeBtnId);
+                    if (btn) btn.classList.add('active');
+                }
+                
+                if (autoSave) saveRpc(null, true);
+            }
+        </script>
+</body>
+
+</html>

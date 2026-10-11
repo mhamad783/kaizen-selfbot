@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat System - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .btn-add:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #333;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .server-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #15151a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #147b61;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sp-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .sp-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sp-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .sp-sub {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Whitelist Items */
+        .whitelist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a20;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .whitelist-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .whitelist-info {
+            flex-grow: 1;
+            min-width: 0;
+            margin-right: 5px;
+        }
+
+        .whitelist-name {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1rem;
+        }
+
+        .whitelist-sub {
+            font-size: 0.8rem;
+            color: #888;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        /* Toggle Switch */
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .status-info {
+            flex: 1;
+            min-width: 0;
+            padding-right: 15px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #147b61;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .warning-text {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .btn-delete {
+                width: auto;
+                margin: 0;
+                flex-shrink: 0;
+            }
+
+            .whitelist-item .btn-delete {
+                padding: 8px 12px;
+            }
+
+            .main-container {
+                padding: 80px 15px 100px;
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .back-btn {
+                top: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>AI Chat System</h1>
+            <p>Configure your personal AI assistant.</p>
+        </div>
+
+
+
+        <!-- AI Personality Config -->
+        <div class="section-card">
+            <div class="section-title">Personality & Rules</div>
+            <div class="form-grid">
+
+                <div class="input-group">
+                    <label class="input-label">AI Name</label>
+                    <input type="text" id="aiName" class="input-field" placeholder="e.g. Kaizen+">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Backstory</label>
+                    <input type="text" id="backstory" class="input-field"
+                        placeholder="e.g. You are a helpful assistant...">
+                </div>
+                <div class="input-group full-width">
+                    <label class="input-label">Personality</label>
+                    <input type="text" id="personality" class="input-field"
+                        placeholder="e.g. Funny, Sarcastic, Professional">
+                </div>
+                <div class="input-group full-width">
+                    <label class="input-label">System Rules</label>
+                    <textarea id="rules" class="input-field"
+                        placeholder="e.g. Do not ping everyone. Keep answers short."></textarea>
+                </div>
+            </div>
+            <button class="btn-add" id="btnSavePersonality" onclick="savePersonality()">Save Settings</button>
+        </div>
+
+        <!-- Banned Words -->
+        <div class="section-card">
+            <div class="section-title">Banned Words (Safety)</div>
+            <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">AI will ignore messages containing these
+                words/phrases.</p>
+            <div class="input-group">
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="newBannedWord" class="input-field" placeholder="e.g. age">
+                    <button class="btn-add" style="width:auto; margin:0;" onclick="addBannedWord()">Add</button>
+                </div>
+            </div>
+            <div id="bannedList" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:15px;"></div>
+        </div>
+
+        <!-- Whitelists -->
+        <div class="form-grid">
+            <!-- Servers -->
+            <div class="section-card">
+                <div class="section-title">Whitelisted Servers</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Enable for specific servers.</p>
+
+                <input type="text" id="inputGuild" class="input-field" placeholder="Paste Server ID..."
+                    oninput="onWhitelistInput('guild')">
+                <div id="previewGuild" style="display:none;"></div>
+                <button id="btnAddGuild" class="btn-add" disabled onclick="confirmAdd('guild')">Add Server</button>
+
+                <div id="serverList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+
+            <!-- Channels -->
+            <div class="section-card">
+                <div class="section-title">Whitelisted Channels</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Enable for specific channels (Ping
+                    required).</p>
+
+                <input type="text" id="inputChannel" class="input-field" placeholder="Paste Channel ID..."
+                    oninput="onWhitelistInput('channel')">
+                <div id="previewChannel" style="display:none;"></div>
+                <button id="btnAddChannel" class="btn-add" disabled onclick="confirmAdd('channel')">Add Channel</button>
+
+                <div id="channelList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- Advanced: DM & Free Will -->
+        <div class="form-grid">
+            <!-- DM Users -->
+            <div class="section-card">
+                <div class="section-title">AI DM Users</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">AI talks in DMs with these users (No ping
+                    required).</p>
+
+                <input type="text" id="inputUser" class="input-field" placeholder="Paste User ID..."
+                    oninput="onWhitelistInput('user')">
+                <div id="previewUser" style="display:none;"></div>
+                <button id="btnAddUser" class="btn-add" disabled onclick="confirmAdd('user')">Add User</button>
+
+                <div id="userList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+
+            <!-- Group Chats -->
+            <div class="section-card">
+                <div class="section-title">Whitelisted Group Chats</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Enable for specific Group DMs.</p>
+
+                <input type="text" id="inputGroup" class="input-field" placeholder="Paste Group ID..."
+                    oninput="onWhitelistInput('group')">
+
+                <div style="margin: 10px 0; display:flex; align-items:center;">
+                    <input type="checkbox" id="chkGroupMention"
+                        style="transform: scale(1.2); margin-right: 8px; cursor:pointer;">
+                    <label for="chkGroupMention" style="color:#ccc; cursor:pointer; font-size:0.9rem;">Reply ONLY when
+                        Mentioned</label>
+                </div>
+
+                <div id="previewGroup" style="display:none;"></div>
+                <button id="btnAddGroup" class="btn-add" disabled onclick="confirmAdd('group')">Add Group</button>
+
+                <div id="groupList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+
+            <!-- Free Will Channels -->
+            <div class="section-card">
+                <div class="section-title">Free Will Channels</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">
+                    AI replies to EVERY message here (No ping required).
+                    <span class="warning-text">⚠ Warning: Can be spammy.</span>
+                </p>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="inputFree" class="input-field" placeholder="Paste Channel ID..."
+                        oninput="onWhitelistInput('free')" style="flex: 1;">
+                    <input type="number" id="inputFreeDelay" class="input-field" placeholder="Delay (seconds)" min="0" style="width: 140px;">
+                </div>
+                <div id="previewFree" style="display:none;"></div>
+                <button id="btnAddFree" class="btn-add" disabled onclick="confirmAdd('free')">Add Channel</button>
+
+                <div id="freeList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+
+            <!-- Blocklist Users -->
+            <div class="section-card" style="border: 1px solid rgba(231, 76, 60, 0.3);">
+                <div class="section-title" style="color:#e74c3c; border-color: rgba(231,76,60,0.2);">Blocklist Users</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">AI will ignore these users completely across all servers and DMs.</p>
+
+                <input type="text" id="inputBlocked" class="input-field" placeholder="Paste User ID..."
+                    oninput="onWhitelistInput('blockuser')">
+                <div id="previewBlocked" style="display:none;"></div>
+                <button id="btnAddBlocked" class="btn-add" style="background: linear-gradient(90deg, #e74c3c, #c0392b); box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);" disabled onclick="confirmAdd('blockuser')">Block User</button>
+
+                <div id="blockedList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+            </div>
+        </div>
+
+        <!-- Global Toggle (Danger Zone) -->
+        <div class="section-card" style="border: 1px solid rgba(231, 76, 60, 0.3);">
+            <div class="status-row">
+                <div class="status-info">
+                    <span style="font-size: 1.1rem; font-weight:600; color:#e74c3c;">Global Enable (Danger)</span>
+                    <p style="color: #aaa; font-size: 0.85rem; margin-top: 5px;">
+                        Enables AI response to PINGS/MENTIONS in ALL servers and channels.
+                        <span class="warning-text">⚠ Warning: High risk of spam. Use whitelist instead if unsure.</span>
+                        <span id="globalStatusText" style="display:block; color:#888; margin-top:5px;"></span>
+                    </p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="globalToggle" onchange="updateConfig()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="status-row">
+                <div class="status-info">
+                    <span style="font-size: 1.1rem; font-weight:600; color:#fff;">Disable AI Mention/Ping</span>
+                    <p style="color: #aaa; font-size: 0.85rem; margin-top: 5px;">
+                        If enabled, the AI will softly reply to users without constantly pinging/mentioning them.
+                    </p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="disablePing" onchange="updateConfig()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+    <% if (!hasNvidiaApiKey) { %>
+    <div class="ai-key-backdrop">
+        <section class="ai-key-dialog" role="dialog" aria-modal="true" aria-labelledby="aiKeyTitle">
+            <div class="ai-key-icon"><i class="fas fa-key" aria-hidden="true"></i></div>
+            <p class="ai-key-eyebrow">AI setup</p>
+            <h2 id="aiKeyTitle">Connect NVIDIA AI</h2>
+            <p class="ai-key-description">Add your NVIDIA API key to enable AI replies. The key is kept in server memory and is cleared when the server stops.</p>
+            <form id="aiKeyForm">
+                <label for="nvidiaApiKey">NVIDIA API key</label>
+                <input id="nvidiaApiKey" name="apiKey" type="password" autocomplete="off" required maxlength="4096" placeholder="Paste your NVIDIA API key">
+                <p id="aiKeyFeedback" role="status" aria-live="polite"></p>
+                <button id="saveNvidiaKey" type="submit">Save key and continue <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            </form>
+            <a class="ai-key-ignore" href="/">Ignore and return to dashboard</a>
+            <p class="ai-key-security"><i class="fas fa-lock" aria-hidden="true"></i> Your key is never sent to the browser after saving.</p>
+        </section>
+    </div>
+    <% } %>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let currentData = {};
+            let debounceTimer;
+
+            const aiKeyForm = document.getElementById('aiKeyForm');
+            if (aiKeyForm) {
+                const keyInput = document.getElementById('nvidiaApiKey');
+                const feedback = document.getElementById('aiKeyFeedback');
+                const submitButton = document.getElementById('saveNvidiaKey');
+
+                aiKeyForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Checking with NVIDIA…';
+                    feedback.textContent = 'Sending a small test request to verify your key…';
+                    feedback.classList.remove('error');
+
+                    try {
+                        const response = await fetch('/api/ai/key', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ apiKey: keyInput.value })
+                        });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) {
+                            throw new Error(result.message || 'Could not save the NVIDIA API key.');
+                        }
+                        keyInput.value = '';
+                        window.location.reload();
+                    } catch (error) {
+                        feedback.textContent = error.message;
+                        feedback.classList.add('error');
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = 'Try again <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+                    }
+                });
+                keyInput.focus();
+            }
+
+            async function loadData() {
+                try {
+                    const res = await fetch('/api/ai');
+                    currentData = await res.json();
+                    render();
+                } catch (e) { console.error(e); }
+            }
+
+            function render() {
+                // Global
+                const globalOn = currentData.global;
+                document.getElementById('globalToggle').checked = globalOn;
+                document.getElementById('globalStatusText').innerText = globalOn ?
+                    "ON: AI is active." :
+                    "OFF: AI is disabled (except whitelist?). Actually global usually overrides all.";
+                // User requested: Global ON/OFF -> Server -> Channel.
+                // I'll stick to: Global Toggle controls "Master Power". 
+                // OR Global Toggle = "Respond to Pings Globally". Default false.
+                // Let's assume Global Toggle means "System Enabled".
+                
+                // Ping Toggle
+                document.getElementById('disablePing').checked = currentData.disablePing || false;
+
+                // Personality
+
+                document.getElementById('aiName').value = currentData.aiName || '';
+                document.getElementById('backstory').value = currentData.backstory || '';
+                document.getElementById('personality').value = currentData.personality || '';
+                document.getElementById('rules').value = currentData.rules || '';
+
+                // Banned
+                const bList = document.getElementById('bannedList');
+                bList.innerHTML = '';
+                (currentData.bannedWords || []).forEach(w => {
+                    bList.innerHTML += `
+                        <div style="background:#2a2a35; padding:8px 15px; border-radius:20px; display:flex; align-items:center; gap:10px; border:1px solid rgba(255,255,255,0.1);">
+                            <span>${w}</span>
+                            <span onclick="removeBannedWord('${w}')" style="cursor:pointer; color:#e74c3c; font-weight:bold;">&times;</span>
+                        </div>
+                    `;
+                });
+
+                // Render Lists
+                renderList('serverList', currentData.enrichedServers, 'guild');
+                renderList('channelList', currentData.enrichedChannels, 'channel');
+                renderList('groupList', currentData.enrichedGroups, 'group');
+                renderList('userList', currentData.enrichedUsers, 'user');
+                renderList('freeList', currentData.enrichedFreeWill, 'free');
+                renderList('blockedList', currentData.enrichedBlockedUsers, 'blockuser');
+            }
+
+            function renderList(elementId, items, type) {
+                const el = document.getElementById(elementId);
+                el.innerHTML = '';
+                if (!items || items.length === 0) {
+                    el.innerHTML = '<div class="no-items">None added.</div>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    let icon = item.icon || item.guildIcon || item.avatar;
+                    let sub = `ID: ${item.id}`;
+                    let name = item.name || item.username;
+
+                    if (type === 'channel' || type === 'free') {
+                        name = '#' + name;
+                        sub = `in ${item.guildName}`;
+                        if (type === 'free' && item.delay > 0) {
+                            sub += ` <span style="background:#147b61; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7em;">${item.delay}s DELAY</span>`;
+                        }
+                    }
+                    if (type === 'group') {
+                        sub = 'Group Chat';
+                        if (item.mode === 'mention') sub += ' <span style="background:#e67e22; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7em;">MENTION ONLY</span>';
+                        else sub += ' <span style="background:#2ecc71; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7em;">ALWAYS</span>';
+                        if (!icon) icon = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    }
+
+                    el.innerHTML += `
+                <div class="whitelist-item">
+                    <img src="${icon}" class="whitelist-icon">
+                    <div class="whitelist-info">
+                        <div class="whitelist-name">${name}</div>
+                        <div class="whitelist-sub">${sub}</div>
+                    </div>
+                    <button class="btn-delete" style="padding:5px 10px;" onclick="removeList('${type}', '${item.id}')"><i class="fas fa-times"></i></button>
+                </div>`;
+                });
+            }
+
+            function onWhitelistInput(type) {
+                clearTimeout(debounceTimer);
+                let inputId = 'inputGuild';
+                let previewId = 'previewGuild';
+                let btnId = 'btnAddGuild';
+
+                if (type === 'channel') { inputId = 'inputChannel'; previewId = 'previewChannel'; btnId = 'btnAddChannel'; }
+                if (type === 'user') { inputId = 'inputUser'; previewId = 'previewUser'; btnId = 'btnAddUser'; }
+                if (type === 'group') { inputId = 'inputGroup'; previewId = 'previewGroup'; btnId = 'btnAddGroup'; }
+                if (type === 'free') { inputId = 'inputFree'; previewId = 'previewFree'; btnId = 'btnAddFree'; }
+                if (type === 'blockuser') { inputId = 'inputBlocked'; previewId = 'previewBlocked'; btnId = 'btnAddBlocked'; }
+
+                const id = document.getElementById(inputId).value.trim();
+                const previewEl = document.getElementById(previewId);
+                const btnEl = document.getElementById(btnId);
+
+                if (id.length < 17) {
+                    previewEl.style.display = 'none';
+                    btnEl.disabled = true;
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    previewEl.style.display = 'block';
+                    previewEl.innerHTML = '<div style="color:#999;">Verifying...</div>';
+                    let apiEndpoint = `/api/validate/${type}`;
+                    if (type === 'free' || type === 'group') apiEndpoint = `/api/validate/channel`; // Reuse channel validation
+                    if (type === 'blockuser') apiEndpoint = `/api/validate/user`; 
+
+                    try {
+                        const res = await fetch(apiEndpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+
+                        if (res.ok) {
+                            const info = await res.json();
+                            let iconUrl = info.icon || info.guildIcon || info.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png';
+                            let subInfo = `ID: ${info.id}`;
+                            let name = info.name || info.username;
+
+                            if (type === 'channel' || type === 'free') subInfo = `In: ${info.guildName}`;
+                            if (type === 'group') subInfo = 'Group Chat Found';
+                            if (type === 'guild') subInfo = "Server Found";
+
+                            previewEl.innerHTML = `
+                        <div class="server-preview">
+                            <img src="${iconUrl}" class="sp-icon">
+                            <div class="sp-info">
+                                <div class="sp-name">${name}</div>
+                                <div class="sp-sub">${subInfo}</div>
+                            </div>
+                        </div>
+                    `;
+                            btnEl.disabled = false;
+                        } else {
+                            previewEl.innerHTML = '<div style="color:#ff5555; padding:10px;">Invalid ID.</div>';
+                            btnEl.disabled = true;
+                        }
+                    } catch (e) {
+                        previewEl.innerHTML = '<div style="color:#ff5555; padding:10px;">Error.</div>';
+                        btnEl.disabled = true;
+                    }
+                }, 800);
+            }
+
+            async function confirmAdd(type) {
+                let inputId = 'inputGuild';
+                let previewId = 'previewGuild';
+                let btnId = 'btnAddGuild';
+
+                if (type === 'channel') { inputId = 'inputChannel'; previewId = 'previewChannel'; btnId = 'btnAddChannel'; }
+                if (type === 'user') { inputId = 'inputUser'; previewId = 'previewUser'; btnId = 'btnAddUser'; }
+                if (type === 'group') { inputId = 'inputGroup'; previewId = 'previewGroup'; btnId = 'btnAddGroup'; }
+                if (type === 'free') { inputId = 'inputFree'; previewId = 'previewFree'; btnId = 'btnAddFree'; }
+                if (type === 'blockuser') { inputId = 'inputBlocked'; previewId = 'previewBlocked'; btnId = 'btnAddBlocked'; }
+
+                // Map type to data key
+                const val = document.getElementById(inputId).value.trim();
+
+                if (type === 'guild') {
+                    if (!currentData.enabledServers) currentData.enabledServers = [];
+                    addId(currentData.enabledServers, val);
+                }
+                if (type === 'channel') {
+                    if (!currentData.enabledChannels) currentData.enabledChannels = [];
+                    addId(currentData.enabledChannels, val);
+                }
+                if (type === 'user') {
+                    if (!currentData.dmUsers) currentData.dmUsers = [];
+                    addId(currentData.dmUsers, val);
+                }
+                if (type === 'blockuser') {
+                    if (!currentData.blockedUsers) currentData.blockedUsers = [];
+                    addId(currentData.blockedUsers, val);
+                }
+                if (type === 'group') {
+                    const isMentionOnly = document.getElementById('chkGroupMention').checked;
+                    if (!currentData.enabledGroups) currentData.enabledGroups = [];
+                    if (!currentData.enabledGroupsMention) currentData.enabledGroupsMention = [];
+
+                    if (isMentionOnly) {
+                        // Add to mention, remove from always if exists
+                        addId(currentData.enabledGroupsMention, val);
+                        currentData.enabledGroups = currentData.enabledGroups.filter(x => x !== val);
+                    } else {
+                        // Add to always, remove from mention if exists
+                        addId(currentData.enabledGroups, val);
+                        currentData.enabledGroupsMention = currentData.enabledGroupsMention.filter(x => x !== val);
+                    }
+                    // Clear checkbox
+                    document.getElementById('chkGroupMention').checked = false;
+                }
+                if (type === 'free') {
+                        let delayVal = parseInt(document.getElementById('inputFreeDelay').value) || 0;
+                        if (!currentData.freeWillChannels) currentData.freeWillChannels = [];
+                        
+                        // Check if already exists and update or add new
+                        const existingIndex = currentData.freeWillChannels.findIndex(x => typeof x === 'object' ? x.id === val : x === val);
+                        if (existingIndex >= 0) {
+                            currentData.freeWillChannels[existingIndex] = { id: val, delay: delayVal };
+                        } else {
+                            currentData.freeWillChannels.push({ id: val, delay: delayVal });
+                        }
+                    }
+
+                await saveData();
+                await loadData();
+
+                // Reset UI
+                document.getElementById(inputId).value = '';
+                if (type === 'free') document.getElementById('inputFreeDelay').value = '';
+                document.getElementById(previewId).style.display = 'none';
+                document.getElementById(previewId).innerHTML = '';
+                document.getElementById(btnId).disabled = true;
+            }
+
+            function addId(arr, id) {
+                if (id && !arr.includes(id)) arr.push(id);
+            }
+
+            async function removeList(type, id) {
+                if (!confirm('Remove?')) return;
+                if (type === 'guild') currentData.enabledServers = currentData.enabledServers.filter(x => x !== id);
+                if (type === 'channel') currentData.enabledChannels = currentData.enabledChannels.filter(x => x !== id);
+                if (type === 'user') currentData.dmUsers = currentData.dmUsers.filter(x => x !== id);
+                if (type === 'blockuser') currentData.blockedUsers = currentData.blockedUsers.filter(x => x !== id);
+                if (type === 'group') {
+                    if (currentData.enabledGroups) currentData.enabledGroups = currentData.enabledGroups.filter(x => x !== id);
+                    if (currentData.enabledGroupsMention) currentData.enabledGroupsMention = currentData.enabledGroupsMention.filter(x => x !== id);
+                }
+                if (type === 'free') currentData.freeWillChannels = currentData.freeWillChannels.filter(x => typeof x === 'object' ? x.id !== id : x !== id);
+                await saveData();
+                await loadData();
+            }
+
+            async function addBannedWord() {
+                const w = document.getElementById('newBannedWord').value.trim();
+                if (!w) return;
+                if (!currentData.bannedWords) currentData.bannedWords = [];
+                if (!currentData.bannedWords.includes(w)) currentData.bannedWords.push(w);
+                await saveData();
+                document.getElementById('newBannedWord').value = '';
+                render();
+            }
+            async function removeBannedWord(w) {
+                if (!currentData.bannedWords) return;
+                currentData.bannedWords = currentData.bannedWords.filter(x => x !== w);
+                await saveData();
+                render();
+            }
+
+            async function savePersonality() {
+                const btn = document.getElementById('btnSavePersonality');
+                const originalText = btn.innerText;
+                btn.innerText = "Saved!";
+                btn.style.background = "#2ecc71";
+                btn.disabled = true;
+
+
+                currentData.aiName = document.getElementById('aiName').value;
+                currentData.backstory = document.getElementById('backstory').value;
+                currentData.personality = document.getElementById('personality').value;
+                currentData.rules = document.getElementById('rules').value;
+
+                await saveData();
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = ""; // Reset
+                    btn.disabled = false;
+                }, 2000);
+            }
+
+            async function updateConfig() {
+                currentData.global = document.getElementById('globalToggle').checked;
+                currentData.disablePing = document.getElementById('disablePing').checked;
+                await saveData();
+                render(); // No fetch needed usually but consistent
+            }
+
+            async function saveData() {
+                // Send cleaner payload
+                const payload = {
+                    global: currentData.global,
+                    enabledServers: currentData.enabledServers,
+                    enabledChannels: currentData.enabledChannels,
+                    dmUsers: currentData.dmUsers,
+                    enabledGroups: currentData.enabledGroups,
+                    enabledGroupsMention: currentData.enabledGroupsMention,
+                    freeWillChannels: currentData.freeWillChannels,
+                    aiName: currentData.aiName,
+                    backstory: currentData.backstory,
+                    personality: currentData.personality,
+                    rules: currentData.rules,
+
+                    bannedWords: currentData.bannedWords,
+                    disablePing: currentData.disablePing,
+                    blockedUsers: currentData.blockedUsers
+                };
+
+                try {
+                    await fetch('/api/ai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (e) { console.error('Error saving:', e); }
+            }
+
+            window.onload = loadData;
+        </script>
+</body>
+
+</html>
