@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allowed IDs - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 12px;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 15px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .btn-add:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #333;
+        }
+
+        .whitelist-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #1a1a20;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.2s;
+        }
+
+        .whitelist-item:hover {
+            background: #222;
+        }
+
+        .whitelist-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #333;
+        }
+
+        .whitelist-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .whitelist-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .whitelist-sub {
+            font-size: 0.85rem;
+            color: #888;
+            font-family: monospace;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .server-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(20, 123, 97, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid #147b61;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .no-items {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media(max-width: 768px) {
+            .main-container {
+                width: 100%;
+                padding: 80px 15px;
+            }
+
+            .back-btn {
+                top: 20px;
+                left: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>Allowed ID Manager</h1>
+            <p>Manage users authorized to use bot commands.</p>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-user-plus"></i> Add User
+            </div>
+            <p style="color:#888; font-size:0.9rem; margin-bottom:15px;">Paste a User ID to grant access. The bot must
+                be able to fetch the user (share a server/DM).</p>
+
+            <input type="text" id="inputUser" class="input-field" placeholder="Paste Discord User ID..."
+                oninput="onInput()">
+            <div id="previewUser" style="display:none;"></div>
+            <button id="btnAdd" class="btn-add" disabled onclick="confirmAdd()">Add User Access</button>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-users-cog"></i> Authorized Users
+            </div>
+            <div id="userList">
+                <div class="no-items">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let debounceTimer;
+            let currentUserId = '';
+
+            async function loadList() {
+                try {
+                    const res = await fetch('/api/allowed');
+                    const data = await res.json();
+                    renderList(data.allowedUsers);
+                } catch (e) { console.error(e); }
+            }
+
+            function renderList(users) {
+                const list = document.getElementById('userList');
+                if (!users || users.length === 0) {
+                    list.innerHTML = '<div class="no-items">No allowed users configured. Only local bot owner might have access depending on hardcoded settings.</div>';
+                    return;
+                }
+
+                let html = '';
+                users.forEach(u => {
+                    html += `
+                    <div class="whitelist-item">
+                        <img src="${u.avatar}" class="whitelist-icon">
+                        <div class="whitelist-info">
+                            <div class="whitelist-name">${u.username}</div>
+                            <div class="whitelist-sub">${u.id}</div>
+                        </div>
+                        <button class="btn-delete" onclick="removeUser('${u.id}')"><i class="fas fa-trash"></i> Remove</button>
+                    </div>
+                `;
+                });
+                list.innerHTML = html;
+            }
+
+            function onInput() {
+                clearTimeout(debounceTimer);
+                const id = document.getElementById('inputUser').value.trim();
+                const preview = document.getElementById('previewUser');
+                const btn = document.getElementById('btnAdd');
+
+                if (id.length < 17) {
+                    preview.style.display = 'none';
+                    btn.disabled = true;
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    preview.style.display = 'block';
+                    preview.innerHTML = '<div style="color:#aaa;">Fetching user details...</div>';
+
+                    try {
+                        const res = await fetch('/api/validate/user', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+
+                        if (res.ok) {
+                            const user = await res.json();
+                            currentUserId = user.id;
+                            preview.innerHTML = `
+                            <div class="server-preview">
+                                <img src="${user.avatar}" class="whitelist-icon">
+                                <div class="whitelist-info">
+                                    <div class="whitelist-name">${user.username}</div>
+                                    <div class="whitelist-sub">ID: ${user.id}</div>
+                                </div>
+                            </div>
+                        `;
+                            btn.disabled = false;
+                        } else {
+                            preview.innerHTML = '<div style="color:#e74c3c; padding:10px;">User not found or invalid ID.</div>';
+                            btn.disabled = true;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        preview.innerHTML = '<div style="color:#e74c3c;">Error fetching user.</div>';
+                    }
+                }, 800);
+            }
+
+            async function confirmAdd() {
+                const btn = document.getElementById('btnAdd');
+                btn.disabled = true;
+                btn.innerText = "Adding...";
+
+                try {
+                    await fetch('/api/allowed', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'add', id: currentUserId })
+                    });
+
+                    document.getElementById('inputUser').value = '';
+                    document.getElementById('previewUser').style.display = 'none';
+                    btn.innerText = "Add User Access";
+
+                    await loadList();
+                } catch (e) { alert('Error adding user'); }
+            }
+
+            async function removeUser(id) {
+                if (!confirm('Revoke access for this user?')) return;
+                try {
+                    await fetch('/api/allowed', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'remove', id })
+                    });
+                    await loadList();
+                } catch (e) { alert('Error removing user'); }
+            }
+
+            window.onload = loadList;
+        </script>
+</body>
+
+</html>

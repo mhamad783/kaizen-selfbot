@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcomer Setup - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        select.input-field {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="color"].input-field {
+            padding: 5px;
+            height: 45px;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .btn-add:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #333;
+        }
+
+        .server-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #15151a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #147b61;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sp-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .sp-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sp-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .sp-sub {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .whitelist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a20;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .whitelist-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .whitelist-info {
+            flex-grow: 1;
+            min-width: 0;
+            margin-right: 5px;
+        }
+
+        .whitelist-name {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1rem;
+        }
+
+        .whitelist-sub {
+            font-size: 0.8rem;
+            color: #888;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .preview-img-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: #050508;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 200px;
+        }
+
+        #livePreview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-text {
+            color: #888;
+            font-style: italic;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .btn-delete {
+                padding: 8px 12px;
+            }
+
+            .main-container {
+                padding: 80px 15px 100px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>Welcomer</h1>
+            <p>Setup beautiful live welcome images for your servers.</p>
+        </div>
+
+        <div class="form-grid">
+            <!-- Setup Form & Preview -->
+            <div class="section-card">
+                <div class="section-title">Welcome Preview Options</div>
+
+                <div class="input-group full-width" style="margin-bottom: 25px;">
+                    <label class="input-label">Welcome Type</label>
+                    <select id="welcomeType" class="input-field" onchange="toggleWelcomeType()">
+                        <option value="card">Card Welcome (Image)</option>
+                        <option value="text">Text Welcome</option>
+                    </select>
+                </div>
+
+                <!-- CARD SETUP -->
+                <div id="cardSetupSection" class="form-grid">
+                    <div class="input-group full-width">
+                        <label class="input-label">Image Card Text</label>
+                        <textarea id="cardMessage" class="input-field"
+                            style="min-height: 80px; resize: vertical; padding: 12px; font-family: inherit;">WELCOME TO {server}&#10;{user}&#10;Member #{count}</textarea>
+                        <p style="color:#aaa; font-size: 0.85rem; margin-top: 10px;">
+                            <b>Placeholders:</b> {user}, {server}, {count}. Use new lines to create new line in card
+                        </p>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label class="input-label">Username Font Color</label>
+                        <select id="wTextColor" class="input-field"
+                            onchange="localStorage.setItem('welcomerTextColor', this.value)">
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                            <option value="red">Red</option>
+                            <option value="purple">Purple</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="green">Green</option>
+                            <option value="blue">Blue</option>
+                        </select>
+                        <p
+                            style="color:#aaa; font-size: 0.85rem; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; border-left: 3px solid #65d6ae;">
+                            <i class="fas fa-image" style="color:#65d6ae; margin-right:5px;"></i>
+                            <b>Pro Tip:</b> you can put your custom background image in data folder and rename it to
+                            welcome.jpg<br><br>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TEXT SETUP -->
+                <div id="textSetupSection" class="form-grid" style="display: none;">
+                    <div class="input-group full-width">
+                        <label class="input-label">Custom Text Message</label>
+                        <textarea id="textMessage" class="input-field"
+                            style="min-height: 100px; resize: vertical; padding: 12px; font-family: inherit;">hey {user} welcome to the {server} you are {count} member</textarea>
+                        <p style="color:#aaa; font-size: 0.85rem; margin-top: 10px;">
+                            <b>Placeholders:</b> {user} (pings the user), {server} (server name), {count} (member count)
+                        </p>
+                    </div>
+                </div>
+
+                <button id="btnSaveConfig" onclick="saveGlobalConfig()"
+                    style="width: 100%; padding: 15px; font-size: 1.1rem; font-weight: 700; background: linear-gradient(90deg, #147b61, #176d53); border: none; border-radius: 12px; color: #fff; cursor: pointer; transition: 0.3s; margin-top: 15px; box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);">
+                    Save Changes
+                </button>
+            </div>
+
+            <!-- Whitelisted Channels / Add Logic -->
+            <div class="section-card">
+                <div class="section-title">Whitelisted Channels</div>
+                <p style="color:#888; font-size:0.85rem; margin-bottom:15px;">Paste a specific Channel ID to enable
+                    welcoming. (Limited to 1 per server)</p>
+
+                <input type="text" id="inputChannel" class="input-field" placeholder="Paste Channel ID..."
+                    oninput="onWhitelistInput()">
+                <div id="previewChannel" style="display:none;"></div>
+                <button id="btnAddChannel" class="btn-add" disabled onclick="confirmAdd()">Enable in this
+                    Channel</button>
+
+                <div id="channelList"
+                    style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                    <div class="no-items">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let currentSetups = [];
+            let debounceTimer;
+            let verifiedGuildId = null;
+
+            async function loadData() {
+                try {
+                    const res = await fetch('/api/welcomer');
+                    const data = await res.json();
+                    currentSetups = data.setups || [];
+
+                    if (data.config) {
+                        document.getElementById('wTextColor').value = data.config.textcolor || 'white';
+                        document.getElementById('welcomeType').value = data.config.welcomeType || 'card';
+                        document.getElementById('textMessage').value = data.config.textMessage || 'hey {user} welcome to the {server} you are {count} member';
+                        document.getElementById('cardMessage').value = data.config.cardMessage || 'WELCOME TO {server}\n{user}\nMember #{count}';
+                        toggleWelcomeType();
+                    }
+
+                    render();
+                } catch (e) { console.error(e); }
+            }
+
+            function toggleWelcomeType() {
+                const type = document.getElementById('welcomeType').value;
+                if (type === 'text') {
+                    document.getElementById('cardSetupSection').style.display = 'none';
+                    document.getElementById('textSetupSection').style.display = 'grid';
+                } else {
+                    document.getElementById('cardSetupSection').style.display = 'grid';
+                    document.getElementById('textSetupSection').style.display = 'none';
+                }
+            }
+
+            function render() {
+                const listEl = document.getElementById('channelList');
+                listEl.innerHTML = '';
+
+                if (currentSetups.length === 0) {
+                    listEl.innerHTML = '<div class="no-items" style="text-align:center; color:#666;">No channels whitelisted yet.</div>';
+                } else {
+                    currentSetups.forEach(s => {
+                        listEl.innerHTML += `
+                    <div class="whitelist-item">
+                        <img src="${s.icon}" class="whitelist-icon">
+                        <div class="whitelist-info">
+                            <div class="whitelist-name">#${s.channelName}</div>
+                            <div class="whitelist-sub">${s.guildName} | Type: ${s.welcomeType === 'text' ? 'TEXT' : 'CARD'}</div>
+                        </div>
+                        <button class="btn-delete" style="padding:5px 10px;" onclick="removeSetup('${s.guildId}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                    });
+                }
+            }
+
+            function onWhitelistInput() {
+                clearTimeout(debounceTimer);
+                const id = document.getElementById('inputChannel').value.trim();
+                const previewEl = document.getElementById('previewChannel');
+                const btnEl = document.getElementById('btnAddChannel');
+                verifiedGuildId = null;
+
+                if (id.length < 17) {
+                    previewEl.style.display = 'none';
+                    btnEl.disabled = true;
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+                    previewEl.style.display = 'block';
+                    previewEl.className = 'server-preview';
+                    previewEl.innerHTML = '<div style="color:#999;">Verifying...</div>';
+
+                    try {
+                        const res = await fetch('/api/validate/channel', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+
+                        if (res.ok) {
+                            const info = await res.json();
+                            let iconUrl = info.guildIcon || 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                            // Check if guild already has setup
+                            if (currentSetups.find(x => x.guildId === info.guildId)) {
+                                previewEl.innerHTML = `
+                                <div style="color:#ffb8ba;">
+                                    <b>Already in list!</b><br>
+                                    <span style="font-size:0.8rem">Server "${info.guildName}" already has a welcome setup. Remove it first to add a new one.</span>
+                                </div>
+                            `;
+                                btnEl.disabled = true;
+                                return;
+                            }
+
+                            verifiedGuildId = info.guildId;
+                            previewEl.innerHTML = `
+                        <img src="${iconUrl}" class="sp-icon">
+                        <div class="sp-info">
+                            <div class="sp-name">#${info.name}</div>
+                            <div class="sp-sub">In server: ${info.guildName}</div>
+                        </div>
+                        `;
+                            btnEl.disabled = false;
+                        } else {
+                            previewEl.innerHTML = '<div style="color:#ff5555;">Invalid ID or Bot not in server.</div>';
+                            btnEl.disabled = true;
+                        }
+                    } catch (e) {
+                        previewEl.innerHTML = '<div style="color:#ff5555;">Error checking ID.</div>';
+                        btnEl.disabled = true;
+                    }
+                }, 800);
+            }
+
+            async function confirmAdd() {
+                const channelId = document.getElementById('inputChannel').value.trim();
+                if (!channelId || !verifiedGuildId) return;
+
+                const textcolor = document.getElementById('wTextColor').value;
+                const welcomeType = document.getElementById('welcomeType').value;
+                const textMessage = document.getElementById('textMessage').value;
+                const cardMessage = document.getElementById('cardMessage').value;
+
+                try {
+                    await fetch('/api/welcomer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'add', guildId: verifiedGuildId, channelId, template: 'custom', background: 'custom', textcolor, welcomeType, textMessage, cardMessage
+                        })
+                    });
+
+                    document.getElementById('inputChannel').value = '';
+                    document.getElementById('previewChannel').style.display = 'none';
+                    document.getElementById('btnAddChannel').disabled = true;
+                    verifiedGuildId = null;
+
+                    await loadData();
+                } catch (e) { console.error('Error saving', e); }
+            }
+
+            async function saveGlobalConfig() {
+                const textcolor = document.getElementById('wTextColor').value;
+                const welcomeType = document.getElementById('welcomeType').value;
+                const textMessage = document.getElementById('textMessage').value;
+                const cardMessage = document.getElementById('cardMessage').value;
+                const btn = document.getElementById('btnSaveConfig');
+
+                const origText = btn.innerText;
+                const origBg = btn.style.background;
+                btn.innerText = "Saving...";
+                btn.disabled = true;
+
+                try {
+                    await fetch('/api/welcomer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'saveConfig', textcolor, welcomeType, textMessage, cardMessage
+                        })
+                    });
+                    await loadData();
+                    btn.innerText = "Saved!";
+                    btn.style.background = "linear-gradient(90deg, #2ecc71, #27ae60)";
+                } catch (e) {
+                    console.error('Error saving config', e);
+                    btn.innerText = "Error!";
+                }
+
+                setTimeout(() => {
+                    btn.innerText = origText;
+                    btn.disabled = false;
+                    btn.style.background = origBg;
+                }, 2000);
+            }
+
+            async function removeSetup(guildId) {
+                if (!confirm('Remove welcome configuration for this server?')) return;
+                try {
+                    await fetch('/api/welcomer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'remove', guildId })
+                    });
+                    await loadData();
+                } catch (e) { console.error('Error removing', e); }
+            }
+
+            window.onload = () => {
+                loadData();
+            };
+        </script>
+</body>
+
+</html>

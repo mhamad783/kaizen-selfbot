@@ -1,0 +1,27 @@
+{
+  "name": "kaizen-dashboard",
+  "version": "1.0.0",
+  "description": "Kaizen Discord account dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "discord",
+    "selfbot",
+    "kaizen",
+    "dashboard"
+  ],
+  "author": "Kaizen",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/core": "^2.6.0",
+    "@discordjs/rest": "^2.6.3",
+    "@discordjs/ws": "^2.0.4",
+    "cookie-parser": "^1.4.7",
+    "discord.js-selfbot-v13": "^3.7.1",
+    "dotenv": "^18.0.7",
+    "ejs": "^7.0.1",
+    "express": "^5.2.1"
+  }
+}

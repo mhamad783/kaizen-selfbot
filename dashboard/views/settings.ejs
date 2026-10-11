@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Kaizen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .settings-page { width: min(760px, calc(100% - 32px)); max-width: 760px; text-align: left; }
+        .settings-page h1 { margin: 0 0 8px; font-size: 2rem; }
+        .settings-page .intro { margin: 0 0 26px; color: #9ba8a5; }
+        .settings-section { padding: 20px 0; border-top: 1px solid rgba(120, 150, 145, .2); }
+        .settings-section h2 { margin: 0 0 14px; font-size: 1.1rem; }
+        .settings-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .settings-input { flex: 1 1 220px; min-width: 0; padding: 11px 12px; border: 1px solid rgba(120, 150, 145, .35); border-radius: 6px; background: var(--bg-color); color: var(--text-color); font: inherit; }
+        .settings-button { padding: 10px 14px; border: 0; border-radius: 6px; background: #16796f; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+        .settings-button.danger { background: #b44945; }
+        .account-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(120, 150, 145, .14); }
+        .account-status { display: block; margin-top: 3px; color: #9ba8a5; font-size: .85rem; }
+        .settings-message { min-height: 1.4em; margin-top: 12px; color: #16796f; }
+        .settings-message.error { color: #b44945; }
+        @media (max-width: 520px) { .settings-page { padding: 24px; } .account-row { align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <main class="dashboard-container settings-page">
+        <h1>Settings</h1>
+        <p class="intro">Manage your connected accounts and dashboard behavior.</p>
+
+        <section class="settings-section">
+            <h2>Command prefix</h2>
+            <div class="settings-row">
+                <input id="prefixInput" class="settings-input" maxlength="8" value="<%= settings.prefix %>" aria-label="Command prefix">
+                <button id="saveSettings" class="settings-button" type="button">Save settings</button>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Appearance</h2>
+            <div class="settings-row">
+                <select id="themeInput" class="settings-input" aria-label="Theme">
+                    <option value="dark" <%= settings.theme === 'dark' ? 'selected' : '' %>>Dark</option>
+                    <option value="light" <%= settings.theme === 'light' ? 'selected' : '' %>>Light</option>
+                </select>
+                <button id="saveTheme" class="settings-button" type="button">Apply theme</button>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Accounts</h2>
+            <div id="accountsList">
+                <% clients.forEach((account) => { %>
+                    <div class="account-row" data-account-key="<%= account.tokenKey %>">
+                        <div><strong><%= account.user ? account.user.tag : account.userLabel %></strong><span class="account-status"><%= account.connectionStatus %></span></div>
+                        <button class="settings-button danger logout-account" type="button" data-key="<%= account.tokenKey %>">Log out</button>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="settings-row" style="margin-top: 14px;">
+                <input id="accountToken" class="settings-input" type="password" autocomplete="off" placeholder="New account token" aria-label="New account token">
+                <button id="addAccount" class="settings-button" type="button">Add account</button>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Server</h2>
+            <button id="shutdown" class="settings-button danger" type="button">Force stop server</button>
+        </section>
+        <div id="settingsMessage" class="settings-message" role="status"></div>
+    </main>
+
+    <%- include('partials/super_button') %>
+    <script>
+        const message = document.getElementById('settingsMessage');
+        const say = (text, error = false) => {
+            message.textContent = text;
+            message.classList.toggle('error', error);
+        };
+        async function postJson(url, body) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Request failed.');
+            return result;
+        }
+        document.getElementById('saveSettings').addEventListener('click', async () => {
+            try {
+                const result = await postJson('/api/settings', {
+                    prefix: document.getElementById('prefixInput').value,
+                    theme: document.getElementById('themeInput').value
+                });
+                localStorage.setItem('kaizen-theme', document.getElementById('themeInput').value);
+                document.body.dataset.theme = document.getElementById('themeInput').value;
+                say(result.message);
+            } catch (error) { say(error.message, true); }
+        });
+        document.getElementById('saveTheme').addEventListener('click', () => document.getElementById('saveSettings').click());
+        document.getElementById('addAccount').addEventListener('click', async () => {
+            try {
+                const result = await postJson('/api/accounts/add', { token: document.getElementById('accountToken').value });
+                say(result.message);
+                document.getElementById('accountToken').value = '';
+                setTimeout(() => location.reload(), 900);
+            } catch (error) { say(error.message, true); }
+        });
+        document.querySelectorAll('.logout-account').forEach((button) => {
+            button.addEventListener('click', async () => {
+                if (!confirm('Disconnect this account?')) return;
+                try {
+                    button.disabled = true;
+                    button.textContent = 'Disconnecting…';
+                    const result = await postJson(`/api/accounts/${encodeURIComponent(button.dataset.key)}/logout`, {});
+                    say(result.message);
+                    location.reload();
+                } catch (error) {
+                    say(error.message, true);
+                    button.disabled = false;
+                    button.textContent = 'Log out';
+                }
+            });
+        });
+        document.getElementById('shutdown').addEventListener('click', async () => {
+            if (!confirm('Stop the server and disconnect all accounts?')) return;
+            try { await postJson('/api/shutdown', {}); say('Server is stopping.'); }
+            catch (error) { say(error.message, true); }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard - Kaizen+</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+            display: none;
+            opacity: 0;
+        }
+
+        .page-loaded .main-container {
+            display: block;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #65d6ae;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #147b61;
+            box-shadow: 0 0 15px rgba(20, 123, 97, 0.2);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #147b61, #176d53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(20, 123, 97, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(20, 123, 97, 0.5);
+        }
+
+        .trigger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a20;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 15px;
+        }
+
+        .trigger-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .trigger-name {
+            font-weight: bold;
+            color: #65d6ae;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .trigger-response {
+            color: #ccc;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .btn-delete {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="page-loaded">
+
+    <a href="/commands" class="back-btn">← Back</a>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>Clipboard</h1>
+            <p>Define custom trigger words and their responses.</p>
+        </div>
+
+        <!-- Add New Trigger -->
+        <div class="section-card">
+            <div class="section-title">Add New Pair</div>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label">Trigger Word (Allowed User usage)</label>
+                    <input type="text" id="newTrigger" class="input-field" placeholder="e.g. hello">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Response</label>
+                    <textarea id="newResponse" class="input-field"
+                        placeholder="e.g. User says hi! (Multi-line supported)"
+                        style="resize: vertical; min-height: 100px; font-family: inherit;"></textarea>
+                </div>
+            </div>
+            <button class="btn-add" onclick="addPair()">Add to Clipboard</button>
+        </div>
+
+        <!-- Trigger List -->
+        <div class="section-card">
+            <div class="section-title">Active Clipboard Items</div>
+            <div id="list">
+                <div class="no-items">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            let currentData = {};
+
+            async function loadData() {
+                try {
+                    const res = await fetch('/api/clipboard');
+                    const data = await res.json();
+                    currentData = data.triggers || {};
+                    render();
+                } catch (e) { console.error(e); }
+            }
+
+            function render() {
+                const listObj = document.getElementById('list');
+                listObj.innerHTML = '';
+
+                const items = Object.entries(currentData);
+
+                if (items.length === 0) {
+                    listObj.innerHTML = '<div class="no-items">No clipboard items found.</div>';
+                    return;
+                }
+
+                items.forEach(([trigger, response]) => {
+                    listObj.innerHTML += `
+                    <div class="trigger-item">
+                        <div class="trigger-info">
+                            <div class="trigger-name">!${trigger}</div>
+                            <div class="trigger-response">${response}</div>
+                        </div>
+                        <button class="btn-delete" onclick="deletePair('${trigger}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                });
+            }
+
+            async function addPair() {
+                const trigger = document.getElementById('newTrigger').value.trim();
+                const response = document.getElementById('newResponse').value.trim();
+
+                if (!trigger || !response) return alert('Please enter both trigger and response.');
+                if (trigger.includes(' ')) return alert('Trigger word should not contain spaces.');
+
+                try {
+                    await fetch('/api/clipboard', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'add', trigger, response })
+                    });
+
+                    document.getElementById('newTrigger').value = '';
+                    document.getElementById('newResponse').value = '';
+                    await loadData();
+                } catch (e) {
+                    alert('Error processing request');
+                }
+            }
+
+            async function deletePair(trigger) {
+                if (!confirm('Delete this item?')) return;
+                try {
+                    await fetch('/api/clipboard', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'remove', trigger })
+                    });
+                    await loadData();
+                } catch (e) {
+                    alert('Error deleting item');
+                }
+            }
+
+            window.onload = loadData;
+        </script>
+</body>
+
+</html>

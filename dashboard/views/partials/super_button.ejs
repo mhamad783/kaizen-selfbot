@@ -1,0 +1,112 @@
+<div class="super-button-wrapper">
+    <div class="super-menu" id="superMenu">
+        <div class="menu-header">Kaizen+ Hub</div>
+
+        <a href="/" class="menu-item <%= page === 'home' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </span>
+            <span class="label">Dashboard</span>
+        </a>
+
+        <a href="/afk" class="menu-item <%= page === 'afk' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+            <span class="label">AFK System</span>
+        </a>
+
+        <a href="/commands" class="menu-item <%= page === 'commands' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+            </span>
+            <span class="label">Commands</span>
+        </a>
+
+        <a href="/ai" class="menu-item <%= page === 'ai' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>
+                </svg>
+            </span>
+            <span class="label">AI Chat</span>
+        </a>
+
+        <a href="/discord" class="menu-item <%= page === 'discord' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <rect x="2" y="4" width="20" height="16" rx="3"></rect>
+                    <path d="M8 10h.01M16 10h.01M8 15c1 1 2.5 1.5 4 1.5s3-.5 4-1.5"></path>
+                </svg>
+            </span>
+            <span class="label">Discord</span>
+        </a>
+
+        <a href="/music" class="menu-item <%= page === 'music' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+            </span>
+            <span class="label">Music</span>
+        </a>
+
+        <a href="/server-cloner" class="menu-item <%= typeof page !== 'undefined' && page === 'cloner' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                </svg>
+            </span>
+            <span class="label">Cloner</span>
+        </a>
+
+        <a href="/settings" class="menu-item <%= page === 'settings' ? 'active' : '' %>">
+            <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#65d6ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.4v-.2a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.4 15a1.7 1.7 0 0 0-1.56-1.03H6v-2.4h.84A1.7 1.7 0 0 0 8.4 10a1.7 1.7 0 0 0-.34-1.88L8 8.06l1.7-1.7.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 12.67 5.2V5h2.4v.2a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.03h.2v2.4h-.2A1.7 1.7 0 0 0 19.4 15z"></path>
+                </svg>
+            </span>
+            <span class="label">Settings</span>
+        </a>
+    </div>
+
+    <button class="super-btn" id="superBtn" type="button" onclick="toggleSuperMenu()" aria-label="Toggle dashboard tabs" aria-expanded="false" aria-controls="superMenu">
+        <svg class="discord-menu-icon" viewBox="0 0 24 24" role="img" aria-label="Discord">
+            <path class="discord-mark" d="M6.2 4.6c3.8-1.4 7.8-1.4 11.6 0l2.7 4.7c1.3 2.3 1.4 5.1.4 7.5l-.2.5-2.7 1.4-1.7-2.1H7.7L6 18.7l-2.7-1.4-.2-.5c-1-2.4-.9-5.2.4-7.5l2.7-4.7Z"></path>
+            <path class="discord-face" d="M8.3 12.1c0 .8-.5 1.4-1.1 1.4s-1.1-.6-1.1-1.4.5-1.4 1.1-1.4 1.1.6 1.1 1.4Zm9.6 0c0 .8-.5 1.4-1.1 1.4s-1.1-.6-1.1-1.4.5-1.4 1.1-1.4 1.1.6 1.1 1.4ZM9.2 15c1.7 1 3.9 1 5.6 0"></path>
+        </svg>
+    </button>
+</div>
+
+<div class="super-overlay" id="superOverlay" onclick="toggleSuperMenu()"></div>
+
+<script>
+    document.body.dataset.theme = localStorage.getItem('kaizen-theme') || 'dark';
+
+    function toggleSuperMenu() {
+        const menu = document.getElementById('superMenu');
+        const btn = document.getElementById('superBtn');
+        const overlay = document.getElementById('superOverlay');
+        const icon = btn.querySelector('.discord-menu-icon');
+
+        menu.classList.toggle('open');
+        btn.classList.toggle('active');
+        overlay.classList.toggle('visible');
+        btn.setAttribute('aria-expanded', menu.classList.contains('open'));
+
+        icon.classList.remove('discord-spin');
+        void icon.getBoundingClientRect();
+        icon.classList.add('discord-spin');
+    }
+</script>

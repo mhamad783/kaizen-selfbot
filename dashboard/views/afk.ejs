@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaizen+ AFK System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <div class="afk-header">
+            <h2>AFK System</h2>
+            <!-- AFK Toggle Form -->
+            <form action="/afk/save" method="POST" id="afkForm">
+                <input type="hidden" name="logsEnabled" value="<%= afkData.logsEnabled ? 'on' : 'off' %>">
+                <input type="hidden" name="reason" value="<%= afkData.reason %>">
+
+                <label class="toggle-switch">
+                    <input type="hidden" name="isOn" value="off">
+                    <input type="checkbox" name="isOn" value="on" <%=afkData.isOn ? 'checked' : '' %>
+                    onchange="document.getElementById('afkForm').submit()">
+                    <span class="slider"></span>
+                </label>
+            </form>
+        </div>
+
+        <div class="status-indicator">
+            Current Status:
+            <span
+                style="color: <%= afkData.isOn ? 'var(--status-dnd)' : 'var(--status-offline)' %>; font-weight: bold;">
+                <%= afkData.isOn ? 'ENABLED' : 'DISABLED' %>
+            </span>
+        </div>
+
+        <!-- Reason Form -->
+        <form action="/afk/save" method="POST" class="settings-form" style="margin-top: 2rem;">
+            <input type="hidden" name="isOn" value="<%= afkData.isOn ? 'on' : 'off' %>">
+            <input type="hidden" name="logsEnabled" value="<%= afkData.logsEnabled ? 'on' : 'off' %>">
+
+            <div class="form-group">
+                <label>AFK Reason (Auto-Reply)</label>
+                <input type="text" name="reason" class="input-field" value="<%= afkData.reason %>"
+                    placeholder="Check my logs!">
+            </div>
+
+            <button type="submit" class="save-btn">Save Reason</button>
+        </form>
+
+        <div class="logs-section">
+            <div class="logs-header">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="title" style="margin:0;">Recent Mentions</div>
+                    <form action="/afk/save" method="POST" id="logsForm">
+                        <input type="hidden" name="isOn" value="<%= afkData.isOn ? 'on' : 'off' %>">
+                        <input type="hidden" name="reason" value="<%= afkData.reason %>">
+
+                        <label class="toggle-switch" title="Toggle Logs" style="transform: scale(0.8);">
+                            <input type="hidden" name="logsEnabled" value="off">
+                            <input type="checkbox" name="logsEnabled" value="on" <%=afkData.logsEnabled ? 'checked' : ''
+                                %> onchange="document.getElementById('logsForm').submit()">
+                            <span class="slider"></span>
+                        </label>
+                    </form>
+                </div>
+
+                <form action="/afk/clear-logs" method="POST" style="display:inline;">
+                    <input type="hidden" name="clearAll" value="true">
+                    <button type="submit" class="clear-btn">Clear All Logs</button>
+                </form>
+            </div>
+
+            <!-- Always render container for JS to populate -->
+            <div class="logs-list">
+                <% if (logs && logs.length> 0) { %>
+                    <% logs.forEach(log=> { %>
+                        <div class="log-item">
+                            <div class="log-info">
+                                <span class="log-user">
+                                    <%= log.user %>
+                                </span>
+                                <span class="log-msg">"<%= log.content %>"</span>
+                            </div>
+                            <div class="log-meta">
+                                <div>
+                                    <%= log.time %>
+                                </div>
+                                <div>
+                                    <%= log.guild %> #<%= log.channel %>
+                                </div>
+                                <a href="<%= log.link %>" target="_blank" class="log-link">Click Here</a>
+
+                                <form action="/afk/clear-logs" method="POST" style="display:inline;">
+                                    <input type="hidden" name="logId" value="<%= log.id %>">
+                                    <button type="submit" class="delete-log-btn">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="empty-msg" style="color: #666; font-style: italic; padding: 20px;">No logs
+                                    found yet...</div>
+                                <% } %>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Live Logs & Save Feedback Logic ---
+
+        // 1. AJAX Save
+        const reasonForm = document.querySelector('.settings-form');
+        if (reasonForm) {
+            reasonForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new URLSearchParams(new FormData(reasonForm));
+
+                const btn = reasonForm.querySelector('.save-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "Saving...";
+
+                try {
+                    const res = await fetch('/afk/save', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        btn.innerText = "Saved!";
+                        btn.style.background = "var(--status-online)";
+                        btn.style.boxShadow = "0 0 15px var(--status-online)";
+
+                        setTimeout(() => {
+                            btn.innerText = originalText;
+                            btn.style.background = "";
+                            btn.style.boxShadow = "";
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    btn.innerText = "Error";
+                    setTimeout(() => btn.innerText = originalText, 2000);
+                }
+            });
+        }
+
+        // 2. Live Logs Polling
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                const logs = await res.json();
+                renderLogs(logs);
+            } catch (err) { console.error(err); }
+        }
+
+        function renderLogs(logs) {
+            const container = document.querySelector('.logs-list');
+            if (!container) return;
+
+            // Check if update needed (Simple check by comparing ID or Length)
+            const currentFirstId = container.querySelector('input[name="logId"]')?.value;
+            const newFirstId = logs[0]?.id;
+            const isEmptyShowing = container.querySelector('.empty-msg');
+
+            // If same top log and not empty, skip (avoids flickering)
+            // But if logs cleared (length 0), we need to update
+            if (logs.length > 0 && currentFirstId === newFirstId && !isEmptyShowing) return;
+            if (logs.length === 0 && isEmptyShowing) return;
+
+            let html = '';
+            if (logs.length === 0) {
+                html = '<div class="empty-msg" style="color: #666; font-style: italic; padding: 20px;">No logs found yet...</div>';
+            } else {
+                logs.forEach(log => {
+                    html += `
+                        <div class="log-item">
+                            <div class="log-info">
+                                <span class="log-user">${escapeHtml(log.user)}</span>
+                                <span class="log-msg">"${escapeHtml(log.content)}"</span>
+                            </div>
+                            <div class="log-meta">
+                                <div>${log.time}</div>
+                                <div>${escapeHtml(log.guild)} #${escapeHtml(log.channel)}</div>
+                                <a href="${log.link}" target="_blank" class="log-link">Click Here</a>
+                                <form action="/afk/clear-logs" method="POST" style="display:inline;">
+                                    <input type="hidden" name="logId" value="${log.id}">
+                                    <button type="submit" class="delete-log-btn">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                     `;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        // Poll every 2 seconds
+        setInterval(fetchLogs, 2000);
+    </script>
+
+    <%- include('partials/super_button') %>
+
+</body>
+
+</html>

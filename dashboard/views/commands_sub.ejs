@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= category %> - Kaizen+
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Fade in start */
+
+        .sub-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .coming-soon-box {
+            background: rgba(19, 19, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        @keyframes popIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #65d6ae);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sub-container">
+        <div class="coming-soon-box">
+            <div class="icon">
+                <% if(category.includes('Rpc')) { %> 🎮
+                    <% } else if(category.includes('Reaction')) { %> ✨
+                        <% } else if(category.includes('Mirror')) { %> 🔮
+                            <% } else { %> 🚀 <% } %>
+            </div>
+            <h1>
+                <%= category %>
+            </h1>
+            <p>We are working hard to bring this feature to life. Stay tuned!</p>
+            <a href="javascript:goBack()" class="btn-back">← Go Back</a>
+        </div>
+    </div>
+
+    <%- include('partials/super_button') %>
+
+        <script>
+            window.onload = () => document.body.style.opacity = '1';
+
+            function goBack() {
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    window.location.href = '/commands';
+                }, 300);
+            }
+        </script>
+</body>
+
+</html>

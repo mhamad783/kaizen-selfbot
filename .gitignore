@@ -1,0 +1,5 @@
+node_modules/
+.env
+data/*.json
+/dashboard/public/recordings
+token1data/
